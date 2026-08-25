@@ -85,7 +85,7 @@ export const MISSIONS: Mission[] = [
 export const ALBUM: AlbumPhoto[] = [
   {
     file: "enfants.jpg",
-    title: "Les enfants de Glo",
+    title: "Les enfants de Glo Alladacomè",
     description:
       "Des sourires qui résument notre raison d'être : les enfants du village accueillent la mission.",
     category: "benin",
@@ -94,8 +94,8 @@ export const ALBUM: AlbumPhoto[] = [
   },
   {
     file: "gouter.jpg",
-    title: "Goûter offert par Dominique",
-    description: "Jeux, danses et goûter sous le préau — un moment de fête offert aux enfants.",
+    title: "Transports des enfants parrainés",
+    description: "Description à écrire.",
     category: "benin",
     width: 1600,
     height: 1200,
@@ -136,16 +136,8 @@ export const ALBUM: AlbumPhoto[] = [
   },
   {
     file: "ceg432.jpg",
-    title: "Un CEG de 432 élèves",
-    description: "Les salles en dur accueillent les collégiens de tout le secteur.",
-    category: "benin",
-    width: 1600,
-    height: 1200,
-  },
-  {
-    file: "cantine.jpg",
-    title: "La cantine scolaire",
-    description: "La cantine fonctionne bien : distribution des repas aux écoliers.",
+    title: "Produit agricole offert par les locaux",
+    description: "Description à écrire.",
     category: "benin",
     width: 1600,
     height: 1200,
@@ -186,7 +178,7 @@ export const ALBUM: AlbumPhoto[] = [
   {
     file: "pelagie.jpg",
     title: "Clotilde, Pélagie et Céline",
-    description: "Trois bénévoles au marché solidaire de Quimperlé.",
+    description: "Restitution du 23-24 mars 2025 à l'Espace Benoite Groult.",
     category: "bretagne",
     width: 1600,
     height: 1144,
@@ -213,13 +205,4 @@ export const PARTNERS: string[] = [
   "XYLM",
   "CAPCOS",
   "CBF",
-];
-
-export const COEURS: string[] = [
-  "Marie-Caroline Seydoux",
-  "Antoine Baronnet",
-  "Marguerite Le Goff",
-  "Marie-Françoise et Jean-François Rouvière",
-  "Roseline et Gérard Brunet",
-  "M. et Mme Georges Come",
 ];

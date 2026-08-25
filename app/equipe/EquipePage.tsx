@@ -177,7 +177,7 @@ export function EquipePage() {
         </div>
       </header>
 
-      <section style={{ background: "var(--paper)", padding: "var(--section-pad-y) 0" }}>
+      {/* <section style={{ background: "var(--paper)", padding: "var(--section-pad-y) 0" }}>
         <div
           style={{
             maxWidth: "var(--container-max)",
@@ -343,7 +343,7 @@ export function EquipePage() {
             </div>
           </Reveal>
         </div>
-      </section>
+      </section> */}
 
       <section style={{ position: "relative", background: "var(--ink-900)", overflow: "hidden" }}>
         <Image

@@ -120,7 +120,7 @@ export function PresidentTeaser() {
             >
               <Image
                 src="/photos/pelagie.jpg"
-                alt="Clotilde, Pélagie et Céline au marché solidaire de Quimperlé"
+                alt="Clotilde, Pélagie et Céline à la restitution du 23-24 mars 2025 à l'Espace Benoite Groult."
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
                 style={{ objectFit: "cover" }}
@@ -140,7 +140,7 @@ export function PresidentTeaser() {
                 color: "var(--ink-800)",
               }}
             >
-              Au marché solidaire de Quimperlé
+              Restitution du 23-24 mars 2025 à l'Espace Benoite Groult
             </div>
           </div>
         </Reveal>

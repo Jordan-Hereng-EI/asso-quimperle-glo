@@ -5,7 +5,7 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import { Badge, Button, Eyebrow, Footer, NavBar } from "@/components/ui";
 import { DonateModal, Reveal } from "@/components/sections";
-import { BUREAU, COEURS, FOOTER_COLUMNS, PARTNERS, getNavLinks } from "@/lib/site-data";
+import { BUREAU, FOOTER_COLUMNS, PARTNERS, getNavLinks } from "@/lib/site-data";
 
 function P({ children, delay = 0 }: { children: ReactNode; delay?: number }) {
   return (
@@ -216,11 +216,9 @@ export function MotDeLaPresidentePage() {
               </Reveal>
 
               <P>
-                Nous portons dans nos cœurs {COEURS.join(", ")}, qui continuent d&apos;œuvrer pour
-                le bien-être de l&apos;association, principalement dans le cadre du projet{" "}
-                <strong>« Glo sans palu »</strong>, qui se déroulera dans quelques villages de Glo à
-                l&apos;été 2025 — ainsi que toutes les belles personnes qui, en France, nous aident
-                à aller de l&apos;avant pour le bien-être des personnes vulnérables à Glo.
+                Nous remercions toutes les personnes qui nous ont porté dans la réussite du projet
+                <strong>« Glo sans palu »</strong>. Nous félicitons les jeunes qui ont obtenus leur
+                diplômes professionnelles aux bénéfices du parrainage.
               </P>
 
               <Reveal>
