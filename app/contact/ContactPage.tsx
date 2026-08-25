@@ -226,7 +226,7 @@ export function ContactPage() {
             margin: "0 auto",
             padding: "0 clamp(20px, 5vw, 64px)",
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(320px, 100%), 1fr))",
             gap: "clamp(36px, 6vw, 80px)",
             alignItems: "start",
           }}
@@ -346,7 +346,13 @@ export function ContactPage() {
                     >
                       Envoyer un message
                     </h3>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "var(--form-row-cols)",
+                        gap: "16px",
+                      }}
+                    >
                       <Field label="Nom">
                         <input
                           placeholder="Votre nom"

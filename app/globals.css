@@ -44,3 +44,137 @@ a:hover {
   break-inside: avoid;
   margin: 0 0 22px;
 }
+
+/* ============================================================
+   RESPONSIVE
+   Components carry inline styles (ported as-is from the handoff), and inline
+   styles win over any class rule — so media queries cannot override them
+   directly. Layout values that must change per breakpoint are therefore
+   exposed as CSS variables here and consumed from the inline styles, e.g.
+   `gridTemplateColumns: "var(--footer-cols)"`. Only the NavBar, which needs a
+   real structural change (burger menu), uses classes instead.
+   ============================================================ */
+:root {
+  --footer-cols: 1.4fr 1fr 1fr;
+  --form-row-cols: 1fr 1fr;
+  /* Height of the sticky NavBar (14px padding × 2 + 52px logo + 1px border),
+     used by the home page to pull the transparent hero up behind it. */
+  --nav-h: 81px;
+  --hero-min-h: 100vh;
+}
+
+/* Mobile browser chrome makes 100vh taller than the visible viewport. */
+@supports (height: 100svh) {
+  :root {
+    --hero-min-h: 100svh;
+  }
+}
+
+@media (max-width: 860px) {
+  :root {
+    --footer-cols: 1fr 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  :root {
+    --footer-cols: 1fr;
+    --form-row-cols: 1fr;
+  }
+}
+
+/* Anchor targets must clear the sticky NavBar when jumped to. */
+[id="missions"],
+[id="about"] {
+  scroll-margin-top: calc(var(--nav-h) + 8px);
+}
+
+/* --- NavBar: desktop row → burger menu below 900px --- */
+.qg-nav-links {
+  display: flex;
+  gap: 28px;
+  list-style: none;
+  margin: 0 0 0 auto;
+  padding: 0;
+}
+
+.qg-nav-cta {
+  display: inline-flex;
+}
+
+.qg-nav-burger {
+  display: none;
+  margin-left: auto;
+}
+
+.qg-nav-panel {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .qg-nav-links,
+  .qg-nav-cta {
+    display: none;
+  }
+
+  .qg-nav-burger {
+    display: inline-flex;
+  }
+
+  .qg-nav-panel {
+    display: flex;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background: var(--paper);
+    border-bottom: 1px solid var(--border-soft);
+    box-shadow: var(--shadow-lg);
+    padding: 8px clamp(20px, 5vw, 64px) 20px;
+    animation: qg-nav-panel-in 200ms var(--ease-out);
+  }
+}
+
+@keyframes qg-nav-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.qg-nav-panel-link {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-body);
+  text-decoration: none;
+  padding: 14px 2px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.qg-nav-panel-link[data-active="true"] {
+  color: var(--benin-green-dark);
+}
+
+.qg-nav-panel-link:hover {
+  color: var(--benin-green);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

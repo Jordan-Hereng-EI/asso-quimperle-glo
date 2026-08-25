@@ -28,7 +28,7 @@ export function Hero({ onDonate }: HeroProps) {
     <section
       style={{
         position: "relative",
-        minHeight: "100vh",
+        minHeight: "var(--hero-min-h)",
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",

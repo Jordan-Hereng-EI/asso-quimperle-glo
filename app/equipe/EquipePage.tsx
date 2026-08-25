@@ -79,6 +79,8 @@ function MemberCard({ member, delay }: { member: BureauMember; delay: number }) 
   );
 }
 
+/* Used only by the "Espace membre" section, commented out below pending a
+   decision on real authentication (see "Points restant à trancher" in README).
 const fieldStyle = {
   width: "100%",
   boxSizing: "border-box" as const,
@@ -97,10 +99,10 @@ const MEMBER_PERKS: Array<["green" | "yellow" | "red", string]> = [
   ["yellow", "Photos et nouvelles des enfants parrainés"],
   ["red", "Reçus fiscaux et attestations de dons"],
 ];
+*/
 
 export function EquipePage() {
   const [donateOpen, setDonateOpen] = useState(false);
-  const [loggedAttempt, setLoggedAttempt] = useState(false);
 
   return (
     <div>
@@ -126,7 +128,7 @@ export function EquipePage() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fit, minmax(min(220px, 100%), 1fr))",
               gap: "clamp(16px, 2.5vw, 28px)",
               margin: "clamp(36px, 5vw, 56px) 0",
               maxWidth: "980px",
@@ -152,7 +154,7 @@ export function EquipePage() {
               margin: "0 auto",
               padding: "clamp(44px, 6vw, 72px) clamp(20px, 5vw, 64px)",
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fit, minmax(min(200px, 100%), 1fr))",
               gap: "32px",
             }}
           >
@@ -184,7 +186,7 @@ export function EquipePage() {
             margin: "0 auto",
             padding: "0 clamp(20px, 5vw, 64px)",
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(320px, 100%), 1fr))",
             gap: "clamp(36px, 6vw, 80px)",
             alignItems: "center",
           }}

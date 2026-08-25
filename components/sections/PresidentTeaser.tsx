@@ -12,7 +12,7 @@ export function PresidentTeaser() {
           margin: "0 auto",
           padding: "0 clamp(20px, 5vw, 64px)",
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(min(320px, 100%), 1fr))",
           gap: "clamp(36px, 6vw, 80px)",
           alignItems: "center",
         }}
@@ -140,7 +140,7 @@ export function PresidentTeaser() {
                 color: "var(--ink-800)",
               }}
             >
-              Restitution du 23-24 mars 2025 à l'Espace Benoite Groult
+              Restitution du 23-24 mars 2025 à l&apos;Espace Benoite Groult
             </div>
           </div>
         </Reveal>
