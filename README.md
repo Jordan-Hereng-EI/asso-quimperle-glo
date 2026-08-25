@@ -1,130 +1,102 @@
-# Association Quimperlé-Glo — site vitrine
+# Association Quimperlé-Glo — monorepo
 
-Site vitrine de l'**Association Quimperlé-Glo** (Quimperlé, Bretagne ↔ Glo-Djigbé, Bénin) :
-accueil, mot de la présidente, équipe, album photo et contact. Application [Next.js](https://nextjs.org)
-(App Router, TypeScript) construite à partir d'un handoff [Claude Design](https://claude.com).
+Deux applications Next.js et leur infrastructure de déploiement :
 
-## Origine du projet
+| Dossier                | Rôle                                                          | Port (prod) |
+| ---------------------- | ------------------------------------------------------------- | ----------- |
+| [`site/`](site)        | Site vitrine public de l'association (voir son README dédié). | 3000        |
+| [`admin/`](admin)      | Espace d'administration (connexion seule pour l'instant).     | 3001        |
+| —                      | PostgreSQL 17 (aucune table pour l'instant).                  | interne     |
 
-Ce dépôt est le portage en production d'un handoff généré dans **Claude Design** — pages,
-composants et tokens de design system livrés sous forme de HTML/JSX de référence (React en
-navigateur, sans build). Ce matériel d'origine est conservé tel quel dans
-[`templates/_handoff-site-nextjs/`](templates/_handoff-site-nextjs) à titre de référence ; ce
-n'est pas du code applicatif et il n'est pas utilisé par l'application.
-
-Le portage a repris fidèlement :
-
-- les **5 pages** du handoff (accueil, mot de la présidente, équipe, album, contact) ;
-- tous les **composants du design system** (`Button`, `Badge`, `Eyebrow`, `SectionHeading`,
-  `StatBlock`, `NavBar`, `Footer`, `MissionCard`) et les sections de page (`Hero`,
-  `MissionsSection`, `AboutSection`, `DonateBand`, `DonateModal`, `PhotoMarquee`,
-  `PresidentTeaser`, `Reveal`) ;
-- les **tokens de design** (couleurs, typographie, espacements/rayons/ombres/animations),
-  conservés à l'identique en variables CSS dans [`styles/tokens/`](styles/tokens).
-
-### Écarts assumés par rapport au handoff
-
-- **Polices** : le handoff charge Bricolage Grotesque / Manrope / Caveat depuis le CDN Google
-  Fonts. Ici elles sont chargées via `next/font/google` (auto-hébergées, sans requête CDN), en
-  conservant les mêmes noms de variables CSS (`--font-display`, `--font-body`, `--font-script`).
-- **Album photo** : le handoff référence 19 photos originales haute résolution qui ne sont pas
-  incluses dans ce paquet de design (seules 13 photos de travail redimensionnées sont fournies
-  dans `design/photos/`). Les 6 légendes sans image correspondante ont été retirées plutôt que
-  associées à une photo trompeuse — voir le commentaire dans
-  [`lib/site-data.ts`](lib/site-data.ts).
-- **Navigation interne** : les `onClick={() => window.location.href = '...'}` du handoff sont
-  remplacés par `next/link` / `Button as="a"` pour une navigation côté client idiomatique.
-- **Formulaires (don, contact, connexion membre)** : maquettes fonctionnelles côté client
-  uniquement (pas de backend). Voir « Points restant à trancher » ci-dessous.
-- **Mobile** : le handoff cible explicitement un viewport desktop (`1280×760/900`, annoté dans
-  chaque page source) et ne fournit ni menu mobile ni breakpoints. Le responsive a donc été ajouté
-  par-dessus le design d'origine, sans en modifier le rendu desktop — voir « Responsive »
-  ci-dessous.
-
-## Responsive
-
-Le rendu desktop reste strictement celui du handoff. En dessous, trois mécanismes se combinent :
-
-- **Menu burger** sous 900px : les liens et le CTA de la `NavBar` se replient dans un panneau
-  déroulant (fermeture au clic sur un lien, à la touche Échap, et au retour en desktop).
-- **Variables CSS de points de rupture** : les composants portent des styles inline (repris tels
-  quels du handoff), et un style inline l'emporte sur toute règle de classe — une media query ne
-  peut donc pas les surcharger. Les valeurs de mise en page qui doivent changer selon la largeur
-  sont donc exposées en variables CSS dans `app/globals.css` (`--footer-cols`, `--form-row-cols`,
-  `--nav-h`, `--hero-min-h`) et consommées depuis les styles inline. Seule la `NavBar`, qui
-  demande un vrai changement de structure, utilise des classes (`.qg-nav-*`).
-- **Grilles fluides** : les grilles `auto-fit` utilisent `minmax(min(320px, 100%), 1fr)` pour ne
-  pas déborder sous 320px de large.
-
-Points vérifiés à 320 / 375 / 768 / 1280px : aucun débordement horizontal sur les 5 pages, cibles
-tactiles ≥ 44px, ancres `#missions` / `#about` dégagées de la barre sticky, hauteur du héros en
-`svh` (la barre d'adresse mobile ne décale plus le premier écran), et respect de
-`prefers-reduced-motion`.
-
-### Points restant à trancher (hérités du handoff)
-
-1. Adresse e-mail de contact réelle (`contact@quimperle-glo.fr` est un placeholder).
-2. Prestataire de don réel pour remplacer la modale `DonateModal` (HelloAsso, Stripe…).
-3. Espace membre (`/equipe`) : vraie authentification ou suppression de la maquette de connexion.
-4. Formulaire de contact (`/contact`) : brancher sur une Server Action ou un service d'envoi
-   d'e-mails (actuellement simulé côté client).
-5. Vérifier les légendes de l'album et les liens des articles de presse (placeholders `href="#"`
-   sur les `MissionCard`).
-
-## Prérequis
-
-- [Node.js](https://nodejs.org) ≥ 20
-- npm (fourni avec Node.js)
-
-## Installation
+## Développement local
 
 ```bash
-npm install
+# Site public — http://localhost:3000
+cd site && npm install && npm run dev
 ```
 
-## Scripts disponibles
-
-| Commande               | Description                                               |
-| ---------------------- | --------------------------------------------------------- |
-| `npm run dev`          | Démarre le serveur de développement sur `localhost:3000`. |
-| `npm run build`        | Build de production.                                      |
-| `npm run start`        | Démarre le serveur de production (après `build`).         |
-| `npm run lint`         | Vérifie le code avec ESLint.                              |
-| `npm run format`       | Formate le code avec Prettier.                            |
-| `npm run format:check` | Vérifie le formatage sans modifier les fichiers.          |
-
-## Structure du projet
-
-```
-app/                          # Routes App Router
-  layout.tsx                  # <html lang="fr">, polices next/font, styles globaux
-  page.tsx                    # Accueil
-  mot-de-la-presidente/
-  equipe/
-  album/
-  contact/
-components/
-  ui/                         # Design system : Button, Badge, Eyebrow, SectionHeading,
-                               # StatBlock, NavBar, Footer, MissionCard
-  sections/                   # Sections de page : Hero, MissionsSection, AboutSection,
-                               # DonateBand, DonateModal, PhotoMarquee, PresidentTeaser, Reveal
-lib/
-  site-data.ts                # Données partagées (nav, footer, missions, album, bureau)
-types/
-  index.ts                    # Types partagés (NavLink, Mission, AlbumPhoto, …)
-styles/
-  tokens/                     # Tokens de design (couleurs, typographie, espacements) — importés
-                               # dans app/globals.css
-public/
-  assets/, photos/            # Images du site
-templates/
-  _handoff-site-nextjs/       # Handoff Claude Design d'origine, conservé pour référence
+```bash
+# Admin — http://localhost:3001
+cd admin && npm install && npm run dev
 ```
 
-## Stack technique
+L'admin exige trois variables d'environnement (dans `admin/.env.local` en dev) :
 
-- [Next.js](https://nextjs.org) (App Router) + TypeScript
-- [Tailwind CSS v4](https://tailwindcss.com) pour la base/reset
-- Tokens de design en variables CSS natives (couleurs, typographie, espacements) — les composants
-  y font directement référence via `style={{ color: 'var(--ink-900)' }}`, à l'identique du handoff
-- ESLint (`eslint-config-next`) + Prettier
+```bash
+ADMIN_EMAIL=vous@exemple.fr
+ADMIN_PASSWORD_HASH=…   # cd admin && npm run hash-password -- "VotreMotDePasse"
+SESSION_SECRET=…        # node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+## Test avec Docker
+
+`docker-compose.yml` build les trois conteneurs depuis les sources, avec des
+valeurs par défaut de développement (admin : `admin@example.com` / `admin`) :
+
+```bash
+docker compose up --build
+```
+
+Site sur http://localhost:3000, admin sur http://localhost:3001.
+
+## Production
+
+Chaque push sur `master` déclenche la GitHub Action du dossier modifié
+(`.github/workflows/deploy-site.yml` et `deploy-admin.yml`, filtrées par
+chemin). Chacune :
+
+1. build l'image Docker et la pousse sur GHCR
+   (`ghcr.io/jordan-hereng-ei/asso-quimperle-glo-{site,admin}`) ;
+2. copie `docker-compose.prod.yml` sur le VPS dans `/opt/quimperle-glo/` ;
+3. y écrit le `.env` depuis les secrets GitHub, tire la nouvelle image et
+   redémarre le service concerné.
+
+Rien à faire sur le VPS au fil de l'eau : le déploiement est entièrement
+automatique. Les deux workflows peuvent aussi être lancés à la main
+(`workflow_dispatch`).
+
+### Secrets GitHub à renseigner (une seule fois)
+
+Dans *Settings → Secrets and variables → Actions* du dépôt :
+
+| Secret                | Contenu                                                                  |
+| --------------------- | ------------------------------------------------------------------------ |
+| `VPS_HOST`            | IP ou nom d'hôte du VPS                                                  |
+| `VPS_USER`            | Utilisateur SSH de déploiement                                           |
+| `VPS_SSH_KEY`         | Clé privée SSH (OpenSSH, la clé publique étant dans `authorized_keys`)   |
+| `VPS_PORT`            | Port SSH — optionnel, 22 par défaut                                      |
+| `POSTGRES_PASSWORD`   | Mot de passe PostgreSQL (alphanumérique conseillé)                       |
+| `ADMIN_EMAIL`         | E-mail du compte administrateur                                          |
+| `ADMIN_PASSWORD_HASH` | Sortie de `cd admin && npm run hash-password -- "VotreMotDePasse"`       |
+| `SESSION_SECRET`      | 64 caractères hexadécimaux aléatoires (commande dans `.env.example`)     |
+
+`.env.example` documente les variables applicatives ; le fichier `.env` du VPS
+est réécrit à chaque déploiement depuis ces secrets — inutile de le gérer à la
+main.
+
+### Préparation du VPS (une seule fois)
+
+```bash
+# 1. Installer Docker (avec le plugin compose)
+curl -fsSL https://get.docker.com | sh
+
+# 2. Créer le dossier de déploiement, appartenant à l'utilisateur SSH
+sudo mkdir -p /opt/quimperle-glo
+sudo chown "$USER" /opt/quimperle-glo
+
+# 3. Autoriser l'utilisateur à parler au démon Docker
+sudo usermod -aG docker "$USER"
+# (se déconnecter / reconnecter pour que le groupe prenne effet)
+```
+
+Ensuite, le premier push sur `master` (ou un lancement manuel des deux
+workflows) déploie tout : site, admin et base de données.
+
+Les ports 3000 (site) et 3001 (admin) sont exposés en direct. Pour servir des
+domaines en HTTPS, placez un reverse proxy (Caddy, Nginx…) devant — hors
+périmètre de ce dépôt pour l'instant.
+
+## Origine
+
+Le site public provient d'un handoff [Claude Design](https://claude.com) porté
+en Next.js — détails, choix et écarts documentés dans [`site/README.md`](site/README.md).

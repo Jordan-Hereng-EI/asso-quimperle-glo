@@ -1,0 +1,100 @@
+name: Déploiement admin
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "admin/**"
+      - "docker-compose.prod.yml"
+      - ".github/workflows/deploy-admin.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-admin
+  cancel-in-progress: true
+
+env:
+  IMAGE: ghcr.io/jordan-hereng-ei/asso-quimperle-glo-admin
+
+jobs:
+  build-and-push:
+    name: Build et push de l'image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Connexion à GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build et push
+        uses: docker/build-push-action@v6
+        with:
+          context: admin
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:latest
+            ${{ env.IMAGE }}:${{ github.sha }}
+          cache-from: type=gha,scope=admin
+          cache-to: type=gha,scope=admin,mode=max
+
+  deploy:
+    name: Déploiement sur le VPS
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Copie du docker-compose de production
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          source: docker-compose.prod.yml
+          target: /opt/quimperle-glo/
+
+      - name: Pull et redémarrage du service
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          envs: GHCR_USER,GHCR_TOKEN,POSTGRES_PASSWORD,ADMIN_EMAIL,ADMIN_PASSWORD_HASH,SESSION_SECRET
+          script: |
+            set -eu
+            cd /opt/quimperle-glo
+            mv -f docker-compose.prod.yml docker-compose.yml
+
+            # .env réécrit à chaque déploiement depuis les secrets GitHub.
+            umask 077
+            cat > .env <<EOF
+            POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+            ADMIN_EMAIL=${ADMIN_EMAIL}
+            ADMIN_PASSWORD_HASH=${ADMIN_PASSWORD_HASH}
+            SESSION_SECRET=${SESSION_SECRET}
+            EOF
+
+            # GITHUB_TOKEN est valide pendant toute la durée du workflow :
+            # il suffit pour tirer l'image depuis GHCR.
+            echo "${GHCR_TOKEN}" | docker login ghcr.io -u "${GHCR_USER}" --password-stdin
+            docker compose pull admin
+            docker compose up -d admin db
+            docker image prune -f
+        env:
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          ADMIN_PASSWORD_HASH: ${{ secrets.ADMIN_PASSWORD_HASH }}
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
