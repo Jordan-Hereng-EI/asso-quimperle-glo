@@ -177,6 +177,56 @@ function Lightbox({
         animation: "fade 240ms ease",
       }}
     >
+      {/* Anchored to the overlay rather than the image so it stays put whatever
+          the photo's aspect ratio — and stays thumb-reachable on mobile, where
+          tapping the backdrop is the only other way out. */}
+      <button
+        type="button"
+        aria-label="Fermer la photo"
+        onClick={onClose}
+        style={{
+          position: "absolute",
+          top: "clamp(12px, 2.5vw, 24px)",
+          right: "clamp(12px, 2.5vw, 24px)",
+          zIndex: 1,
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "48px",
+          height: "48px",
+          padding: 0,
+          borderRadius: "50%",
+          border: "1px solid rgba(253,251,246,0.22)",
+          cursor: "pointer",
+          background: "rgba(253,251,246,0.16)",
+          color: "var(--white)",
+          backdropFilter: "blur(6px)",
+          transition: "background 180ms var(--ease-out), transform 180ms var(--ease-out)",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = "rgba(253,251,246,0.3)";
+          e.currentTarget.style.transform = "scale(1.06)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = "rgba(253,251,246,0.16)";
+          e.currentTarget.style.transform = "none";
+        }}
+      >
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          aria-hidden
+        >
+          <path d="M6 6l12 12" />
+          <path d="M18 6L6 18" />
+        </svg>
+      </button>
+
       <div
         onClick={(e) => e.stopPropagation()}
         style={{ position: "relative", maxWidth: "1000px", width: "100%" }}

@@ -38,10 +38,10 @@ export function Footer({
         style={{
           maxWidth: "var(--container-max)",
           margin: "0 auto",
-          padding: "64px clamp(20px, 5vw, 64px) 40px",
+          padding: "clamp(40px, 6vw, 64px) clamp(20px, 5vw, 64px) 40px",
           display: "grid",
-          gridTemplateColumns: "1.4fr 1fr 1fr",
-          gap: "48px",
+          gridTemplateColumns: "var(--footer-cols)",
+          gap: "clamp(28px, 4vw, 48px)",
         }}
       >
         <div style={{ display: "flex", flexDirection: "column", gap: "18px", maxWidth: "320px" }}>

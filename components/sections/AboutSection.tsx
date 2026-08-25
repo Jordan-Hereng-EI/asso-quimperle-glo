@@ -23,7 +23,7 @@ export function AboutSection() {
           margin: "0 auto",
           padding: "0 clamp(20px, 5vw, 64px)",
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(min(320px, 100%), 1fr))",
           gap: "clamp(36px, 6vw, 80px)",
           alignItems: "center",
         }}

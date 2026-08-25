@@ -37,10 +37,29 @@ Le portage a repris fidèlement :
 - **Formulaires (don, contact, connexion membre)** : maquettes fonctionnelles côté client
   uniquement (pas de backend). Voir « Points restant à trancher » ci-dessous.
 - **Mobile** : le handoff cible explicitement un viewport desktop (`1280×760/900`, annoté dans
-  chaque page source) et ne fournit ni menu mobile ni breakpoints. Le portage conserve ce même
-  périmètre ; en dessous d'environ 900px, la barre de navigation et le pied de page débordent
-  horizontalement faute de traitement mobile dans le design d'origine. À traiter dans une future
-  itération si le site doit être utilisé sur mobile.
+  chaque page source) et ne fournit ni menu mobile ni breakpoints. Le responsive a donc été ajouté
+  par-dessus le design d'origine, sans en modifier le rendu desktop — voir « Responsive »
+  ci-dessous.
+
+## Responsive
+
+Le rendu desktop reste strictement celui du handoff. En dessous, trois mécanismes se combinent :
+
+- **Menu burger** sous 900px : les liens et le CTA de la `NavBar` se replient dans un panneau
+  déroulant (fermeture au clic sur un lien, à la touche Échap, et au retour en desktop).
+- **Variables CSS de points de rupture** : les composants portent des styles inline (repris tels
+  quels du handoff), et un style inline l'emporte sur toute règle de classe — une media query ne
+  peut donc pas les surcharger. Les valeurs de mise en page qui doivent changer selon la largeur
+  sont donc exposées en variables CSS dans `app/globals.css` (`--footer-cols`, `--form-row-cols`,
+  `--nav-h`, `--hero-min-h`) et consommées depuis les styles inline. Seule la `NavBar`, qui
+  demande un vrai changement de structure, utilise des classes (`.qg-nav-*`).
+- **Grilles fluides** : les grilles `auto-fit` utilisent `minmax(min(320px, 100%), 1fr)` pour ne
+  pas déborder sous 320px de large.
+
+Points vérifiés à 320 / 375 / 768 / 1280px : aucun débordement horizontal sur les 5 pages, cibles
+tactiles ≥ 44px, ancres `#missions` / `#about` dégagées de la barre sticky, hauteur du héros en
+`svh` (la barre d'adresse mobile ne décale plus le premier écran), et respect de
+`prefers-reduced-motion`.
 
 ### Points restant à trancher (hérités du handoff)
 

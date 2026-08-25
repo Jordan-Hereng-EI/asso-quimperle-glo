@@ -28,7 +28,7 @@ export default function HomePage() {
   return (
     <>
       <NavBar links={getNavLinks("accueil")} transparent scrolled={scrolled} onCta={openDonate} />
-      <div style={{ marginTop: "-82px" }}>
+      <div style={{ marginTop: "calc(var(--nav-h) * -1)" }}>
         <Hero onDonate={openDonate} />
       </div>
       <MissionsSection />
