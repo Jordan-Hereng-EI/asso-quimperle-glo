@@ -1,0 +1,70 @@
+/* ============================================================
+   COLOR TOKENS — Association Quimperlé-Glo
+   Palette bridges two worlds: the warm sand/ink of the logo badge
+   and the high-contrast green/yellow/red of the Beninese flag.
+   ============================================================ */
+:root {
+  /* --- Brand base (from the logo badge) --- */
+  --sand-50: #faf6ee;
+  --sand-100: #f2e9d6;
+  --sand-200: #e6d5b3;
+  --sand-300: #d5be92;
+  --sand-400: #c6ac79; /* logo circle background */
+  --sand-500: #b1935c;
+  --sand-600: #937743;
+
+  --ink-900: #0f0806; /* logo lettering black */
+  --ink-800: #171310;
+  --ink-700: #2a231d;
+  --ink-600: #423a30;
+
+  --sage-700: #4f6349;
+  --sage-500: #6e8765; /* logo "GLO" green */
+  --sage-300: #a6b79e;
+
+  /* --- Beninese flag accents (the contrasting, eye-catching trio) --- */
+  --benin-green: #009543;
+  --benin-green-dark: #007235;
+  --benin-yellow: #fcd017;
+  --benin-yellow-deep: #f2b705;
+  --benin-red: #e8112d;
+  --benin-red-dark: #bd0a20;
+
+  /* --- Neutrals --- */
+  --white: #ffffff;
+  --paper: #fdfbf6;
+  --stone-100: #f3efe6;
+  --stone-200: #e4ddcf;
+  --stone-400: #a89e8b;
+
+  /* ============================================================
+     SEMANTIC ALIASES
+     ============================================================ */
+  --bg-page: var(--paper);
+  --bg-inverse: var(--ink-900);
+  --surface-card: var(--white);
+  --surface-sunk: var(--sand-50);
+  --surface-band: var(--ink-900);
+
+  --text-strong: var(--ink-900);
+  --text-body: var(--ink-700);
+  --text-muted: var(--ink-600);
+  --text-ondark: var(--sand-50);
+  --text-ondark-muted: var(--sand-300);
+
+  --border-soft: var(--stone-200);
+  --border-strong: var(--ink-900);
+
+  /* Action colors */
+  --action-primary: var(--benin-green);
+  --action-primary-hover: var(--benin-green-dark);
+  --action-danger: var(--benin-red);
+  --action-highlight: var(--benin-yellow);
+
+  --focus-ring: var(--benin-green);
+
+  /* Semantic feedback */
+  --success: var(--benin-green);
+  --warning: var(--benin-yellow-deep);
+  --error: var(--benin-red);
+}

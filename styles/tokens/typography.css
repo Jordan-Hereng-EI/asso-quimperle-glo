@@ -1,0 +1,39 @@
+/* ============================================================
+   TYPOGRAPHY TOKENS
+   Display  → Bricolage Grotesque (bold, characterful, modern)
+   Body     → Manrope (clean, humanist sans)
+   Accent   → Caveat (handwritten, echoes the logo's "Quimperlé")
+   ============================================================ */
+:root {
+  --font-display: "Bricolage Grotesque", "Manrope", system-ui, sans-serif;
+  --font-body: "Manrope", system-ui, -apple-system, sans-serif;
+  --font-script: "Caveat", "Bricolage Grotesque", cursive;
+
+  /* Type scale (fluid-ready base values) */
+  --fs-display-xl: 5rem; /* 80px hero */
+  --fs-display-l: 3.5rem; /* 56px section titles */
+  --fs-display-m: 2.5rem; /* 40px */
+  --fs-h1: 2rem; /* 32px */
+  --fs-h2: 1.5rem; /* 24px */
+  --fs-h3: 1.25rem; /* 20px */
+  --fs-lead: 1.25rem; /* 20px intro paragraphs */
+  --fs-body: 1rem; /* 16px */
+  --fs-sm: 0.875rem; /* 14px */
+  --fs-xs: 0.75rem; /* 12px eyebrows / labels */
+
+  --lh-tight: 1.02; /* @kind other */
+  --lh-snug: 1.15; /* @kind other */
+  --lh-normal: 1.5; /* @kind other */
+  --lh-relaxed: 1.65; /* @kind other */
+
+  --fw-regular: 400; /* @kind other */
+  --fw-medium: 500; /* @kind other */
+  --fw-semibold: 600; /* @kind other */
+  --fw-bold: 700; /* @kind other */
+  --fw-extrabold: 800; /* @kind other */
+
+  --tracking-tight: -0.03em; /* @kind other */
+  --tracking-normal: 0em; /* @kind other */
+  --tracking-wide: 0.02em; /* @kind other */
+  --tracking-eyebrow: 0.16em; /* @kind other */
+}

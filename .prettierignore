@@ -1,0 +1,9 @@
+node_modules
+.next
+out
+build
+public
+package-lock.json
+
+# Raw Claude Design handoff kept for reference — not application code.
+templates

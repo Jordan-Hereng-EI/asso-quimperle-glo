@@ -1,0 +1,441 @@
+<!-- @dsCard group="Site" viewport="1280x760" name="Album photo" subtitle="Galerie légendée avec filtres et visionneuse" -->
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Album photo — Association Quimperlé-Glo</title>
+    <link rel="stylesheet" href="../../styles.css" />
+    <script src="../../_ds_bundle.js"></script>
+    <script
+      src="https://unpkg.com/react@18.3.1/umd/react.development.js"
+      integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"
+      integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"
+      integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y"
+      crossorigin="anonymous"
+    ></script>
+    <script src="site-nav.js"></script>
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        font-family: var(--font-body);
+      }
+      a {
+        color: var(--benin-green-dark);
+      }
+      a:hover {
+        color: var(--benin-green);
+      }
+      .masonry {
+        columns: 3 300px;
+        column-gap: 22px;
+      }
+      .masonry figure {
+        break-inside: avoid;
+        margin: 0 0 22px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel" src="Reveal.jsx"></script>
+    <script type="text/babel" src="DonateModal.jsx"></script>
+    <script type="text/babel" data-presets="react">
+      const { NavBar, Footer, Button, Eyebrow, Badge, SectionHeading } =
+        window.QuimperlGloDesignSystem_ce5208;
+      const { Reveal, UPLOAD, ALBUM } = window;
+
+      const FILTERS = [
+        ["all", "Toutes les photos"],
+        ["benin", "Au Bénin"],
+        ["bretagne", "En Bretagne"],
+      ];
+
+      function Chip({ on, children, onClick }) {
+        return (
+          <button
+            onClick={onClick}
+            style={{
+              padding: "10px 20px",
+              cursor: "pointer",
+              fontFamily: "var(--font-body)",
+              fontSize: "0.92rem",
+              fontWeight: 700,
+              borderRadius: "var(--radius-pill)",
+              border: `2px solid ${on ? "var(--benin-green)" : "var(--border-soft)"}`,
+              background: on ? "var(--benin-green)" : "var(--white)",
+              color: on ? "var(--white)" : "var(--text-body)",
+              transition: "all 220ms var(--ease-out)",
+            }}
+          >
+            {children}
+          </button>
+        );
+      }
+
+      function Photo({ p, i, onOpen }) {
+        const [hov, setHov] = React.useState(false);
+        return (
+          <figure>
+            <Reveal delay={(i % 3) * 100}>
+              <div
+                onClick={onOpen}
+                onMouseEnter={() => setHov(true)}
+                onMouseLeave={() => setHov(false)}
+                style={{
+                  position: "relative",
+                  borderRadius: "var(--radius-lg)",
+                  overflow: "hidden",
+                  cursor: "zoom-in",
+                  boxShadow: hov ? "var(--shadow-lg)" : "var(--shadow-sm)",
+                  transition: "box-shadow 320ms var(--ease-out)",
+                  background: "var(--stone-100)",
+                }}
+              >
+                <img
+                  src={UPLOAD(p.f)}
+                  alt={p.t}
+                  loading="lazy"
+                  style={{
+                    width: "100%",
+                    display: "block",
+                    transform: hov ? "scale(1.045)" : "scale(1)",
+                    transition: "transform 700ms var(--ease-out)",
+                  }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background:
+                      "linear-gradient(180deg, rgba(15,8,6,0) 55%, rgba(15,8,6,0.82) 100%)",
+                    opacity: hov ? 1 : 0.75,
+                    transition: "opacity 320ms",
+                  }}
+                />
+                <figcaption
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    padding: "18px 18px 16px",
+                    transform: hov ? "translateY(0)" : "translateY(6px)",
+                    transition: "transform 320ms var(--ease-out)",
+                  }}
+                >
+                  <div
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      fontWeight: 800,
+                      fontSize: "1.02rem",
+                      color: "var(--white)",
+                      letterSpacing: "-0.01em",
+                    }}
+                  >
+                    {p.t}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "0.84rem",
+                      lineHeight: 1.45,
+                      color: "var(--sand-200)",
+                      marginTop: "4px",
+                      maxHeight: hov ? "80px" : 0,
+                      opacity: hov ? 1 : 0,
+                      overflow: "hidden",
+                      transition: "all 380ms var(--ease-out)",
+                    }}
+                  >
+                    {p.d}
+                  </div>
+                </figcaption>
+              </div>
+            </Reveal>
+          </figure>
+        );
+      }
+
+      function Lightbox({ list, idx, onClose, onNav }) {
+        React.useEffect(() => {
+          const onKey = (e) => {
+            if (e.key === "Escape") onClose();
+            if (e.key === "ArrowRight") onNav(1);
+            if (e.key === "ArrowLeft") onNav(-1);
+          };
+          window.addEventListener("keydown", onKey);
+          return () => window.removeEventListener("keydown", onKey);
+        }, [onNav, onClose]);
+        if (idx == null) return null;
+        const p = list[idx];
+        const btn = {
+          position: "absolute",
+          top: "50%",
+          transform: "translateY(-50%)",
+          width: "46px",
+          height: "46px",
+          borderRadius: "50%",
+          border: "none",
+          cursor: "pointer",
+          background: "rgba(253,251,246,0.14)",
+          color: "var(--white)",
+          fontSize: "1.3rem",
+          backdropFilter: "blur(6px)",
+          transition: "background 180ms",
+        };
+        return (
+          <div
+            onClick={onClose}
+            style={{
+              position: "fixed",
+              inset: 0,
+              zIndex: 100,
+              background: "rgba(15,8,6,0.92)",
+              backdropFilter: "blur(6px)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "clamp(16px, 4vw, 48px)",
+              animation: "fade 240ms ease",
+            }}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{ position: "relative", maxWidth: "1000px", width: "100%" }}
+            >
+              <img
+                key={p.f}
+                src={UPLOAD(p.f)}
+                alt={p.t}
+                style={{
+                  width: "100%",
+                  maxHeight: "72vh",
+                  objectFit: "contain",
+                  borderRadius: "var(--radius-lg)",
+                  animation: "fade 320ms ease",
+                }}
+              />
+              <button
+                aria-label="Photo précédente"
+                onClick={() => onNav(-1)}
+                style={{ ...btn, left: "-8px" }}
+              >
+                ‹
+              </button>
+              <button
+                aria-label="Photo suivante"
+                onClick={() => onNav(1)}
+                style={{ ...btn, right: "-8px" }}
+              >
+                ›
+              </button>
+              <div
+                style={{
+                  textAlign: "center",
+                  marginTop: "18px",
+                  maxWidth: "64ch",
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                }}
+              >
+                <div
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontWeight: 800,
+                    fontSize: "1.25rem",
+                    color: "var(--white)",
+                  }}
+                >
+                  {p.t}
+                </div>
+                <p
+                  style={{
+                    margin: "8px 0 0",
+                    fontSize: "0.95rem",
+                    lineHeight: 1.6,
+                    color: "var(--sand-200)",
+                  }}
+                >
+                  {p.d}
+                </p>
+                <div
+                  style={{
+                    marginTop: "10px",
+                    fontSize: "0.8rem",
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    color: "var(--sand-400)",
+                  }}
+                >
+                  {idx + 1} / {list.length}
+                </div>
+              </div>
+            </div>
+            <style>{`@keyframes fade{from{opacity:0}to{opacity:1}}`}</style>
+          </div>
+        );
+      }
+
+      function Page() {
+        const [donate, setDonate] = React.useState(false);
+        const [filter, setFilter] = React.useState("all");
+        const [open, setOpen] = React.useState(null);
+        const list = ALBUM.filter((p) => filter === "all" || p.cat === filter);
+        return (
+          <div>
+            <NavBar
+              logo="../../assets/logo.jpg"
+              links={window.NAV_LINKS("album")}
+              onCta={() => setDonate(true)}
+            />
+
+            <header
+              style={{ background: "var(--surface-sunk)", padding: "clamp(56px, 8vw, 88px) 0 0" }}
+            >
+              <div
+                style={{
+                  maxWidth: "var(--container-max)",
+                  margin: "0 auto",
+                  padding: "0 clamp(20px, 5vw, 64px)",
+                }}
+              >
+                <Reveal>
+                  <SectionHeading
+                    eyebrow="Album photo"
+                    title="Nos actions en"
+                    scriptWord="images"
+                    lead="Missions au Bénin, événements en Bretagne : chaque photo raconte un moment de la vie de l'association. Cliquez pour agrandir."
+                    align="center"
+                  />
+                </Reveal>
+                <Reveal delay={160}>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "10px",
+                      justifyContent: "center",
+                      flexWrap: "wrap",
+                      margin: "clamp(28px, 4vw, 40px) 0",
+                    }}
+                  >
+                    {FILTERS.map(([k, l]) => (
+                      <Chip key={k} on={filter === k} onClick={() => setFilter(k)}>
+                        {l}
+                      </Chip>
+                    ))}
+                  </div>
+                </Reveal>
+              </div>
+            </header>
+
+            <section
+              style={{ background: "var(--surface-sunk)", padding: "0 0 var(--section-pad-y)" }}
+            >
+              <div
+                style={{
+                  maxWidth: "var(--container-max)",
+                  margin: "0 auto",
+                  padding: "0 clamp(20px, 5vw, 64px)",
+                }}
+              >
+                <div className="masonry" key={filter}>
+                  {list.map((p, i) => (
+                    <Photo key={p.f} p={p} i={i} onOpen={() => setOpen(i)} />
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* Contribute band */}
+            <section style={{ background: "var(--ink-900)" }}>
+              <div style={{ height: "6px", display: "flex" }}>
+                <span style={{ flex: 1, background: "var(--benin-green)" }} />
+                <span style={{ flex: 1, background: "var(--benin-yellow)" }} />
+                <span style={{ flex: 1, background: "var(--benin-red)" }} />
+              </div>
+              <div
+                style={{
+                  maxWidth: "var(--container-narrow)",
+                  margin: "0 auto",
+                  padding: "clamp(48px, 7vw, 80px) clamp(20px, 5vw, 64px)",
+                  textAlign: "center",
+                }}
+              >
+                <Reveal>
+                  <h2
+                    style={{
+                      margin: 0,
+                      fontFamily: "var(--font-display)",
+                      fontSize: "clamp(1.7rem, 4vw, 2.5rem)",
+                      fontWeight: 800,
+                      letterSpacing: "-0.03em",
+                      color: "var(--white)",
+                    }}
+                  >
+                    Derrière chaque photo, une{" "}
+                    <span
+                      style={{
+                        fontFamily: "var(--font-script)",
+                        fontWeight: 700,
+                        color: "var(--benin-yellow)",
+                      }}
+                    >
+                      action
+                    </span>{" "}
+                    à soutenir
+                  </h2>
+                </Reveal>
+                <Reveal delay={160}>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "14px",
+                      justifyContent: "center",
+                      flexWrap: "wrap",
+                      marginTop: "28px",
+                    }}
+                  >
+                    <Button variant="highlight" size="lg" onClick={() => setDonate(true)}>
+                      Faire un don
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="lg"
+                      style={{ color: "var(--white)" }}
+                      onClick={() => (window.location.href = "index.html#missions")}
+                    >
+                      Découvrir nos missions
+                    </Button>
+                  </div>
+                </Reveal>
+              </div>
+            </section>
+
+            <Footer logo="../../assets/logo.jpg" columns={window.FOOTER_COLS} />
+            <Lightbox
+              list={list}
+              idx={open}
+              onClose={() => setOpen(null)}
+              onNav={(d) => setOpen((o) => (o + d + list.length) % list.length)}
+            />
+            <window.DonateModal open={donate} onClose={() => setDonate(false)} />
+          </div>
+        );
+      }
+      ReactDOM.createRoot(document.getElementById("root")).render(<Page />);
+    </script>
+  </body>
+</html>

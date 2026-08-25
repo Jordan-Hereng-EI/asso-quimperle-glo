@@ -1,0 +1,94 @@
+<!-- @dsCard group="Site" viewport="1280x760" name="Landing page — Quimperlé-Glo" subtitle="Full landing: cinematic hero, missions, story, donate" -->
+<!-- @startingPoint section="Site" subtitle="Humanitarian landing page for Quimperlé-Glo" viewport="1280x900" -->
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Association Quimperlé-Glo</title>
+    <link rel="stylesheet" href="../../styles.css" />
+    <script src="../../_ds_bundle.js"></script>
+    <script src="site-nav.js"></script>
+    <script
+      src="https://unpkg.com/react@18.3.1/umd/react.development.js"
+      integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"
+      integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"
+      integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y"
+      crossorigin="anonymous"
+    ></script>
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        font-family: var(--font-body);
+      }
+      a {
+        color: var(--benin-green-dark);
+      }
+      a:hover {
+        color: var(--benin-green);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel" src="Hero.jsx"></script>
+    <script type="text/babel" src="Reveal.jsx"></script>
+    <script type="text/babel" src="DonateModal.jsx"></script>
+    <script type="text/babel" src="ExtraSections.jsx"></script>
+    <script type="text/babel" src="MissionsSection.jsx"></script>
+    <script type="text/babel" src="AboutSection.jsx"></script>
+    <script type="text/babel" data-presets="react">
+      const { NavBar, Footer, Button } = window.QuimperlGloDesignSystem_ce5208;
+      const DonateModal = window.DonateModal;
+
+      function App() {
+        const [scrolled, setScrolled] = React.useState(false);
+        const [donate, setDonate] = React.useState(false);
+        React.useEffect(() => {
+          const el = document.getElementById("scrollhost");
+          const onScroll = () => setScrolled((el ? el.scrollTop : window.scrollY) > 40);
+          const target = el || window;
+          target.addEventListener("scroll", onScroll);
+          return () => target.removeEventListener("scroll", onScroll);
+        }, []);
+        const open = () => setDonate(true);
+        return (
+          <div id="scrollhost" style={{ height: "100vh", overflowY: "auto" }}>
+            <div style={{ position: "sticky", top: 0, zIndex: 50 }}>
+              <NavBar
+                logo="../../assets/logo.jpg"
+                links={window.NAV_LINKS("accueil")}
+                transparent
+                scrolled={scrolled}
+                onCta={open}
+              />
+            </div>
+            <div style={{ marginTop: "-82px" }}>
+              <window.Hero onDonate={open} />
+            </div>
+            <window.MissionsSection />
+            <window.PhotoMarquee />
+            <window.AboutSection />
+            <window.PresidentTeaser />
+            <window.DonateBand onDonate={open} />
+            <Footer logo="../../assets/logo.jpg" columns={window.FOOTER_COLS} />
+            <DonateModal open={donate} onClose={() => setDonate(false)} />
+          </div>
+        );
+      }
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    </script>
+  </body>
+</html>

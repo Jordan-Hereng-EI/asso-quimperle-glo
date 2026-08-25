@@ -1,0 +1,69 @@
+<!-- @dsCard group="Components" viewport="700x480" name="MissionCard" subtitle="Mission card with illustration + press link" -->
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../styles.css" />
+    <script src="../../_ds_bundle.js"></script>
+    <script
+      src="https://unpkg.com/react@18.3.1/umd/react.development.js"
+      integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"
+      integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"
+      integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y"
+      crossorigin="anonymous"
+    ></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 28px;
+        font-family: var(--font-body);
+        background: var(--surface-sunk);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        max-width: 640px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      const { MissionCard } = window.QuimperlGloDesignSystem_ce5208;
+      function Demo() {
+        return (
+          <div className="grid">
+            <MissionCard
+              image="../../assets/enfants.jpg"
+              tag="Éducation"
+              tagTone="green"
+              title="Scolariser les enfants"
+              description="Fournitures, uniformes et parrainage pour que chaque enfant aille à l'école."
+              articleSource="Ouest-France"
+              accent="var(--benin-green)"
+            />
+            <MissionCard
+              image="../../assets/article1.avif"
+              tag="Santé"
+              tagTone="yellow"
+              title="Missions sur le terrain"
+              description="Visites régulières au Bénin pour accompagner les familles et évaluer les besoins."
+              articleSource="Le Télégramme"
+              accent="var(--benin-yellow-deep)"
+            />
+          </div>
+        );
+      }
+      ReactDOM.createRoot(document.getElementById("root")).render(<Demo />);
+    </script>
+  </body>
+</html>

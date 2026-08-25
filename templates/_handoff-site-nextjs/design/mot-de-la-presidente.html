@@ -1,0 +1,475 @@
+<!-- @dsCard group="Site" viewport="1280x760" name="Le mot de la présidente" subtitle="Lettre de bienvenue, remerciements et partenaires" -->
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Le mot de la présidente — Association Quimperlé-Glo</title>
+    <link rel="stylesheet" href="../../styles.css" />
+    <script src="../../_ds_bundle.js"></script>
+    <script
+      src="https://unpkg.com/react@18.3.1/umd/react.development.js"
+      integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"
+      integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"
+      integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y"
+      crossorigin="anonymous"
+    ></script>
+    <script src="site-nav.js"></script>
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        font-family: var(--font-body);
+      }
+      a {
+        color: var(--benin-green-dark);
+      }
+      a:hover {
+        color: var(--benin-green);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel" src="Reveal.jsx"></script>
+    <script type="text/babel" src="DonateModal.jsx"></script>
+    <script type="text/babel" data-presets="react">
+      const { NavBar, Footer, Button, Eyebrow, Badge, SectionHeading } =
+        window.QuimperlGloDesignSystem_ce5208;
+      const { Reveal, UPLOAD } = window;
+
+      const PARTNERS = [
+        "Mairie de Quimperlé",
+        "Département du Finistère",
+        "Région Bretagne",
+        "Brest'Eau",
+        "PRA/OSIM",
+        "AFD",
+        "FORIM",
+        "XYLM",
+        "CAPCOS",
+        "CBF",
+      ];
+      const BUREAU = [
+        ["Pélagie Atanhlouéto-Tritscher", "Présidente"],
+        ["Yves Le Goff", "Vice-président"],
+        ["Gwénaëlle Petit-Jean", "Secrétaire"],
+        ["Katty Bardouil", "Secrétaire adjointe"],
+        ["Christine Le Goff", "Trésorière"],
+        ["Thomas Dinahet", "Communication"],
+      ];
+      const COEURS = [
+        "Marie-Caroline Seydoux",
+        "Antoine Baronnet",
+        "Marguerite Le Goff",
+        "Marie-Françoise et Jean-François Rouvière",
+        "Roseline et Gérard Brunet",
+        "M. et Mme Georges Come",
+      ];
+
+      const P = ({ children, delay = 0 }) => (
+        <Reveal delay={delay}>
+          <p
+            style={{
+              margin: "0 0 22px",
+              fontSize: "1.08rem",
+              lineHeight: 1.75,
+              color: "var(--text-body)",
+            }}
+          >
+            {children}
+          </p>
+        </Reveal>
+      );
+      const SubTitle = ({ children }) => (
+        <Reveal>
+          <h3
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: "1.35rem",
+              fontWeight: 800,
+              letterSpacing: "-0.02em",
+              color: "var(--ink-900)",
+              margin: "38px 0 16px",
+            }}
+          >
+            {children}
+          </h3>
+        </Reveal>
+      );
+
+      function Page() {
+        const [donate, setDonate] = React.useState(false);
+        return (
+          <div>
+            <NavBar
+              logo="../../assets/logo.jpg"
+              links={window.NAV_LINKS("accueil")}
+              onCta={() => setDonate(true)}
+            />
+
+            {/* Header band */}
+            <header
+              style={{ position: "relative", background: "var(--ink-900)", overflow: "hidden" }}
+            >
+              <img
+                src={UPLOAD("Quimp-Glo-18 Clotilde Pélagie Céline.JPG")}
+                alt="Pélagie et les bénévoles à Quimperlé"
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  objectPosition: "center 30%",
+                  opacity: 0.38,
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: "linear-gradient(180deg, rgba(15,8,6,0.55), rgba(15,8,6,0.88))",
+                }}
+              />
+              <div
+                style={{
+                  position: "relative",
+                  maxWidth: "var(--container-narrow)",
+                  margin: "0 auto",
+                  padding: "clamp(72px, 10vw, 128px) clamp(20px, 5vw, 64px)",
+                  textAlign: "center",
+                }}
+              >
+                <Reveal>
+                  <Eyebrow color="var(--benin-yellow)" ondark style={{ justifyContent: "center" }}>
+                    Le mot de la présidente
+                  </Eyebrow>
+                </Reveal>
+                <Reveal delay={140}>
+                  <h1
+                    style={{
+                      margin: "18px 0 0",
+                      fontFamily: "var(--font-display)",
+                      fontSize: "clamp(2.4rem, 6vw, 4rem)",
+                      fontWeight: 800,
+                      lineHeight: 1.05,
+                      letterSpacing: "-0.03em",
+                      color: "var(--white)",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontFamily: "var(--font-script)",
+                        fontWeight: 700,
+                        color: "var(--benin-yellow)",
+                      }}
+                    >
+                      Bienvenue
+                    </span>{" "}
+                    sur le site officiel de l'association
+                  </h1>
+                </Reveal>
+                <Reveal delay={280}>
+                  <p
+                    style={{
+                      margin: "20px auto 0",
+                      maxWidth: "58ch",
+                      fontSize: "1.1rem",
+                      lineHeight: 1.65,
+                      color: "var(--sand-200)",
+                    }}
+                  >
+                    Permettez-nous, avant tout, d'avoir une pensée pour toutes les personnes qui
+                    souffrent des guerres et autres sinistres aux quatre coins du monde.
+                  </p>
+                </Reveal>
+              </div>
+              <div style={{ position: "relative", height: "6px", display: "flex" }}>
+                <span style={{ flex: 1, background: "var(--benin-green)" }} />
+                <span style={{ flex: 1, background: "var(--benin-yellow)" }} />
+                <span style={{ flex: 1, background: "var(--benin-red)" }} />
+              </div>
+            </header>
+
+            {/* Letter */}
+            <section
+              style={{ background: "var(--surface-sunk)", padding: "var(--section-pad-y) 0" }}
+            >
+              <div
+                style={{ maxWidth: "880px", margin: "0 auto", padding: "0 clamp(20px, 5vw, 64px)" }}
+              >
+                <Reveal>
+                  <div
+                    style={{
+                      background: "var(--white)",
+                      borderRadius: "var(--radius-lg)",
+                      boxShadow: "var(--shadow-lg)",
+                      padding: "clamp(32px, 6vw, 72px)",
+                    }}
+                  >
+                    <SubTitle>Merci à celles et ceux qui font vivre l'association</SubTitle>
+                    <P>
+                      Nous remercions d'abord les bénévoles, les adhérents, les cotisants et leurs
+                      donateurs : leurs efforts dans la recherche de financements et l'organisation
+                      d'événements au profit de l'Association Quimperlé-Glo sont précieux.
+                    </P>
+                    <P>
+                      Nous remercions tout particulièrement les parrains et les marraines d'une
+                      vingtaine d'enfants à Glo, au Bénin. Grâce à vous, plusieurs personnes en
+                      difficulté mènent aujourd'hui une vie normale et épanouie.
+                    </P>
+                    <P>
+                      Nous remercions la Mairie de Quimperlé et ses élus, qui nous soutiennent
+                      depuis une douzaine d'années par l'octroi de subventions et la mise à
+                      disposition des infrastructures des services techniques. Nous n'oublions pas
+                      les bailleurs du Département du Finistère et de la Région Bretagne, toujours
+                      restés à nos côtés lors de nos demandes de subventions, ni Brest'Eau, sur qui
+                      nous avons pu compter pendant le forage du puits.
+                    </P>
+                    <P>
+                      Grâce au PRA/OSIM, à l'AFD et au FORIM, l'Association Quimperlé-Glo a repris
+                      son souffle. Nous avons bénéficié d'un accompagnement au montage de dossiers
+                      par XYLM, le CAPCOS et le CBF : merci pour la qualité de l'écoute et du suivi.
+                    </P>
+                    <P>
+                      Nos remerciements vont également à Katty, Walter, Dominique, Paul et Léa,
+                      éléments motivateurs qui continuent de soutenir les membres du bureau dans
+                      leurs tâches associatives, surtout administratives.
+                    </P>
+
+                    <SubTitle>Ils nous accompagnent</SubTitle>
+                    <Reveal>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          gap: "10px",
+                          marginBottom: "10px",
+                        }}
+                      >
+                        {PARTNERS.map((p, i) => (
+                          <Badge key={i} tone={["green", "yellow", "red"][i % 3]} soft>
+                            {p}
+                          </Badge>
+                        ))}
+                      </div>
+                    </Reveal>
+
+                    <SubTitle>Nos pensées aux membres du bureau</SubTitle>
+                    <Reveal>
+                      <ul
+                        style={{
+                          margin: "0 0 22px",
+                          padding: 0,
+                          listStyle: "none",
+                          display: "grid",
+                          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                          gap: "12px",
+                        }}
+                      >
+                        {BUREAU.map(([n, r], i) => (
+                          <li
+                            key={i}
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: "2px",
+                              padding: "14px 18px",
+                              background: "var(--sand-50)",
+                              borderRadius: "var(--radius-md)",
+                            }}
+                          >
+                            <span style={{ fontWeight: 700, color: "var(--ink-900)" }}>{n}</span>
+                            <span style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
+                              {r}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </Reveal>
+
+                    <P>
+                      Nous portons dans nos cœurs {COEURS.join(", ")}, qui continuent d'œuvrer pour
+                      le bien-être de l'association, principalement dans le cadre du projet{" "}
+                      <strong>« Glo sans palu »</strong>, qui se déroulera dans quelques villages de
+                      Glo à l'été 2025 — ainsi que toutes les belles personnes qui, en France, nous
+                      aident à aller de l'avant pour le bien-être des personnes vulnérables à Glo.
+                    </P>
+
+                    <Reveal>
+                      <div
+                        style={{
+                          marginTop: "36px",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "16px",
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: "54px",
+                            height: "3px",
+                            background: "var(--benin-green)",
+                            borderRadius: "2px",
+                          }}
+                        />
+                        <div>
+                          <div
+                            style={{
+                              fontFamily: "var(--font-script)",
+                              fontSize: "1.9rem",
+                              color: "var(--ink-900)",
+                            }}
+                          >
+                            Pélagie Atanhlouéto-Tritscher
+                          </div>
+                          <div
+                            style={{
+                              fontSize: "0.85rem",
+                              fontWeight: 700,
+                              letterSpacing: "0.12em",
+                              textTransform: "uppercase",
+                              color: "var(--text-muted)",
+                            }}
+                          >
+                            Présidente de l'association
+                          </div>
+                        </div>
+                      </div>
+                    </Reveal>
+                  </div>
+                </Reveal>
+              </div>
+            </section>
+
+            {/* Mission band */}
+            <section
+              style={{ position: "relative", background: "var(--ink-900)", overflow: "hidden" }}
+            >
+              <img
+                src={UPLOAD("CEG YOKPO.jpg")}
+                alt=""
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  opacity: 0.22,
+                }}
+              />
+              <div
+                style={{
+                  position: "relative",
+                  maxWidth: "var(--container-narrow)",
+                  margin: "0 auto",
+                  padding: "clamp(56px, 8vw, 96px) clamp(20px, 5vw, 64px)",
+                  textAlign: "center",
+                }}
+              >
+                <Reveal>
+                  <Eyebrow color="var(--benin-yellow)" ondark style={{ justifyContent: "center" }}>
+                    Notre mission
+                  </Eyebrow>
+                </Reveal>
+                <Reveal delay={140}>
+                  <h2
+                    style={{
+                      margin: "18px 0 0",
+                      fontFamily: "var(--font-display)",
+                      fontSize: "clamp(1.9rem, 4.5vw, 3rem)",
+                      fontWeight: 800,
+                      lineHeight: 1.1,
+                      letterSpacing: "-0.03em",
+                      color: "var(--white)",
+                    }}
+                  >
+                    Le développement de tous les{" "}
+                    <span
+                      style={{
+                        fontFamily: "var(--font-script)",
+                        fontWeight: 700,
+                        color: "var(--benin-yellow)",
+                      }}
+                    >
+                      Glo
+                    </span>{" "}
+                    est notre mission première
+                  </h2>
+                </Reveal>
+                <Reveal delay={280}>
+                  <p
+                    style={{
+                      margin: "18px auto 0",
+                      maxWidth: "62ch",
+                      fontSize: "1.1rem",
+                      lineHeight: 1.7,
+                      color: "var(--sand-200)",
+                    }}
+                  >
+                    Faire rayonner les actions de notre association auprès des personnes démunies du
+                    Bénin, pour prévenir les dangers de l'exode rural, de l'immigration clandestine,
+                    de la délinquance, des mariages forcés et des grossesses de mineures.
+                  </p>
+                </Reveal>
+                <Reveal delay={420}>
+                  <p
+                    style={{
+                      margin: "18px auto 0",
+                      maxWidth: "56ch",
+                      fontSize: "1.05rem",
+                      lineHeight: 1.65,
+                      color: "var(--sand-100)",
+                    }}
+                  >
+                    Nous avons besoin de vous, chères et chers internautes : de vos dons, de vos
+                    apports, de vos conseils pour réussir cette mission. Rejoignez-nous !
+                  </p>
+                </Reveal>
+                <Reveal delay={520}>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "14px",
+                      justifyContent: "center",
+                      flexWrap: "wrap",
+                      marginTop: "32px",
+                    }}
+                  >
+                    <Button variant="highlight" size="lg" onClick={() => setDonate(true)}>
+                      Faites un don
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="lg"
+                      style={{ color: "var(--white)" }}
+                      onClick={() => (window.location.href = "contact.html")}
+                    >
+                      Rejoignez-nous
+                    </Button>
+                  </div>
+                </Reveal>
+              </div>
+            </section>
+
+            <Footer logo="../../assets/logo.jpg" columns={window.FOOTER_COLS} />
+            <window.DonateModal open={donate} onClose={() => setDonate(false)} />
+          </div>
+        );
+      }
+      ReactDOM.createRoot(document.getElementById("root")).render(<Page />);
+    </script>
+  </body>
+</html>

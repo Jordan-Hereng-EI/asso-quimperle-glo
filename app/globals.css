@@ -1,0 +1,46 @@
+@import "tailwindcss";
+@import "../styles/tokens/colors.css";
+@import "../styles/tokens/typography.css";
+@import "../styles/tokens/spacing.css";
+
+/*
+ * The handoff loads Bricolage Grotesque / Manrope / Caveat from the Google
+ * Fonts CDN (design-system/tokens/fonts.css). In Next.js we load them with
+ * next/font/google instead (self-hosted, no CDN request) and just point the
+ * same --font-display / --font-body / --font-script names the components
+ * already consume at the variables next/font generates.
+ */
+:root {
+  --font-display: var(--font-bricolage), "Manrope", system-ui, sans-serif;
+  --font-body: var(--font-manrope), system-ui, -apple-system, sans-serif;
+  --font-script: var(--font-caveat), "Bricolage Grotesque", cursive;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-page);
+  font-family: var(--font-body);
+  color: var(--text-body);
+}
+
+a {
+  color: var(--benin-green-dark);
+}
+
+a:hover {
+  color: var(--benin-green);
+}
+
+.masonry {
+  columns: 3 300px;
+  column-gap: 22px;
+}
+
+.masonry figure {
+  break-inside: avoid;
+  margin: 0 0 22px;
+}
