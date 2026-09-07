@@ -5,9 +5,13 @@
 #
 # Identifiants admin par défaut : admin@example.com / admin
 # (hash scrypt du mot de passe "admin", généré par admin/scripts/hash-password.mjs)
+# Identifiants Dozzle par défaut (http://localhost:8080) : admin / admin
 #
 # La base est aussi publiée sur 127.0.0.1:5432 pour pouvoir lancer le site ou
 # l'admin en `npm run dev` contre elle (DATABASE_URL dans les .env.local).
+#
+# Pas de driver journald ici : il n'existe pas sous Docker Desktop
+# (Windows/macOS). En production, voir docker-compose.prod.yml.
 
 services:
   site:
@@ -57,6 +61,18 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+
+  dozzle:
+    image: amir20/dozzle:latest
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      DOZZLE_AUTH_PROVIDER: simple
+      DOZZLE_NO_ANALYTICS: "true"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./dozzle/users.dev.yml:/data/users.yml:ro
 
 volumes:
   pgdata:
