@@ -104,6 +104,7 @@ Dans *Settings → Secrets and variables → Actions* du dépôt :
 | `ADMIN_EMAIL`         | E-mail du compte administrateur                                        |
 | `ADMIN_PASSWORD_HASH` | Sortie de `cd admin && npm run hash-password -- "VotreMotDePasse"`     |
 | `SESSION_SECRET`      | 64 caractères hexadécimaux aléatoires (commande dans `.env.example`)   |
+| `DOZZLE_USERS_YML`    | Fichier utilisateurs de Dozzle (voir « Logs »), collé tel quel          |
 
 `.env.example` documente les variables applicatives ; le fichier `.env` du VPS
 est réécrit à chaque déploiement depuis ces secrets — inutile de le gérer à la
@@ -122,10 +123,54 @@ sudo chown "$USER" /opt/quimperle-glo
 # 3. Autoriser l'utilisateur à parler au démon Docker
 sudo usermod -aG docker "$USER"
 # (se déconnecter / reconnecter pour que le groupe prenne effet)
+
+# 4. Journal système persistant et sans limite de durée (voir « Logs »)
+sudo mkdir -p /var/log/journal
+sudo sed -i 's/^#\?Storage=.*/Storage=persistent/; s/^#\?SystemMaxUse=.*/SystemMaxUse=10G/' /etc/systemd/journald.conf
+sudo systemctl restart systemd-journald
 ```
 
 Ensuite, le premier push sur `master` (ou un lancement manuel des deux
-workflows) déploie tout : site, admin et base de données.
+workflows) déploie tout : site, admin, base de données et Dozzle.
+
+### Logs
+
+Les conteneurs de production écrivent dans le **journal système du VPS**
+(driver Docker `journald`) et non dans des fichiers qui leur seraient propres.
+L'historique survit donc aux redéploiements et aux redémarrages, et n'est
+jamais effacé automatiquement tant que le plafond `SystemMaxUse` (10 Go
+ci-dessus, soit des années de logs pour ce site) n'est pas atteint. Les
+fichiers vivent dans `/var/log/journal/` : à inclure dans les sauvegardes.
+
+Deux façons de les consulter :
+
+- **Dozzle**, sur le port 8080 du VPS (`http://<vps>:8080`) : tous les
+  conteneurs en temps réel, recherche, filtres, téléchargement — réservé au
+  compte défini dans le secret `DOZZLE_USERS_YML`. Pour générer ce fichier
+  (mot de passe haché en bcrypt, jamais stocké en clair) :
+
+  ```bash
+  docker run --rm amir20/dozzle generate dev --email vous@exemple.fr --name "Votre nom"
+  ```
+
+  La commande demande le mot de passe puis affiche le YAML : collez-le
+  intégralement dans le secret. Dozzle ne stocke rien lui-même ; il lit le
+  socket Docker en lecture seule.
+
+- **En SSH**, par service et par période, y compris pour les conteneurs déjà
+  remplacés :
+
+  ```bash
+  journalctl CONTAINER_TAG=admin -f                       # en direct
+  journalctl CONTAINER_TAG=site --since "2026-09-01"      # depuis une date
+  journalctl CONTAINER_TAG=db -p err                      # erreurs seules
+  ```
+
+  `docker compose logs` fonctionne aussi, limité au conteneur en cours.
+
+En test local (`docker-compose.yml`), Dozzle est disponible sur
+http://localhost:8080 avec `admin` / `admin` ; le driver `journald` n'y est
+pas utilisé car il n'existe pas sous Docker Desktop.
 
 ### Sauvegardes
 
@@ -133,9 +178,12 @@ Deux volumes Docker portent toutes les données : `pgdata` (base) et `uploads`
 (photos). Ils survivent aux redéploiements ; ce sont eux qu'il faut inclure
 dans les sauvegardes du VPS.
 
-Les ports 3000 (site) et 3001 (admin) sont exposés en direct. Pour servir des
-domaines en HTTPS, placez un reverse proxy (Caddy, Nginx…) devant — hors
-périmètre de ce dépôt pour l'instant.
+Les ports 3000 (site), 3001 (admin) et 8080 (Dozzle) sont exposés en direct.
+Pour servir des domaines en HTTPS, placez un reverse proxy (Caddy, Nginx…)
+devant — hors périmètre de ce dépôt pour l'instant. Si vous préférez ne pas
+exposer Dozzle publiquement, remplacez `"8080:8080"` par `"127.0.0.1:8080:8080"`
+dans `docker-compose.prod.yml` et accédez-y via un tunnel SSH
+(`ssh -L 8080:localhost:8080 <vps>`).
 
 ## À compléter avant la mise en ligne
 

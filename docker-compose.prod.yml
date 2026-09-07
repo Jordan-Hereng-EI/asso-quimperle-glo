@@ -4,6 +4,14 @@
 #
 # Les variables viennent du fichier .env écrit à côté par le déploiement
 # (lui-même alimenté par les secrets GitHub) — voir .env.example.
+#
+# Logs : chaque service écrit dans le journal système du VPS (driver journald)
+# plutôt que dans des fichiers propres au conteneur. L'historique survit donc
+# aux redéploiements et se consulte avec `journalctl CONTAINER_TAG=<tag>` ou
+# dans Dozzle (port 8080). Voir README, section « Logs ».
+
+x-journald: &journald
+  driver: journald
 
 services:
   site:
@@ -19,6 +27,10 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    logging:
+      <<: *journald
+      options:
+        tag: site
 
   admin:
     image: ghcr.io/jordan-hereng-ei/asso-quimperle-glo-admin:latest
@@ -36,6 +48,10 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    logging:
+      <<: *journald
+      options:
+        tag: admin
 
   db:
     image: postgres:17-alpine
@@ -51,6 +67,30 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+    logging:
+      <<: *journald
+      options:
+        tag: db
+
+  # Consultation des logs dans le navigateur (temps réel, recherche, filtres),
+  # réservée au développeur : compte défini par dozzle/users.yml, écrit par le
+  # déploiement depuis le secret GitHub DOZZLE_USERS_YML. Lecture seule du
+  # socket Docker, aucune donnée stockée par Dozzle lui-même.
+  dozzle:
+    image: amir20/dozzle:latest
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      DOZZLE_AUTH_PROVIDER: simple
+      DOZZLE_NO_ANALYTICS: "true"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./dozzle/users.yml:/data/users.yml:ro
+    logging:
+      <<: *journald
+      options:
+        tag: dozzle
 
 volumes:
   pgdata:

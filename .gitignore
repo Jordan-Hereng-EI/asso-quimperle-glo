@@ -3,4 +3,8 @@
 .env.*
 !.env.example
 
+# Compte Dozzle de production : vit sur le VPS, écrit par le déploiement
+# depuis le secret DOZZLE_USERS_YML. Seul users.dev.yml (admin/admin) est versionné.
+dozzle/users.yml
+
 .DS_Store
