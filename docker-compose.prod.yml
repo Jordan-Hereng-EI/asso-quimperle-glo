@@ -1,0 +1,45 @@
+# Compose de PRODUCTION : utilise les images publiées sur GHCR par les
+# GitHub Actions. Ce fichier est copié sur le VPS (dans /opt/quimperle-glo,
+# sous le nom docker-compose.yml) automatiquement à chaque déploiement.
+#
+# Les variables viennent du fichier .env écrit à côté par le déploiement
+# (lui-même alimenté par les secrets GitHub) — voir .env.example.
+
+services:
+  site:
+    image: ghcr.io/jordan-hereng-ei/asso-quimperle-glo-site:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+
+  admin:
+    image: ghcr.io/jordan-hereng-ei/asso-quimperle-glo-admin:latest
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      SESSION_SECRET: ${SESSION_SECRET:?SESSION_SECRET manquante}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:?ADMIN_EMAIL manquante}
+      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH:?ADMIN_PASSWORD_HASH manquante}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-quimperle}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD manquante}@db:5432/${POSTGRES_DB:-quimperle_glo}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-quimperle}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD manquante}
+      POSTGRES_DB: ${POSTGRES_DB:-quimperle_glo}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:

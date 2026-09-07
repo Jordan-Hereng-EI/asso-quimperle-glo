@@ -1,0 +1,46 @@
+# Compose de TEST : build les images depuis les sources locales.
+# Usage : docker compose up --build
+# Les valeurs par défaut ci-dessous permettent de démarrer sans configuration ;
+# ne les utilisez jamais en production (voir docker-compose.prod.yml).
+#
+# Identifiants admin par défaut : admin@example.com / admin
+# (hash scrypt du mot de passe "admin", généré par admin/scripts/hash-password.mjs)
+
+services:
+  site:
+    build: ./site
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+
+  admin:
+    build: ./admin
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      SESSION_SECRET: ${SESSION_SECRET:-dev-only-secret-change-me-0123456789abcdef}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
+      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH:-6162636465666768696a6b6c6d6e6f70:fae9be9d6c5553ba2a686795ef0f48f7e867b31105fd29bb3ee82b3a573cf7b18f95e5fe94aed18d968dccac083f80cdcb6f01187803e04659dde5a058def491}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-quimperle}:${POSTGRES_PASSWORD:-devpassword}@db:5432/${POSTGRES_DB:-quimperle_glo}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-quimperle}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devpassword}
+      POSTGRES_DB: ${POSTGRES_DB:-quimperle_glo}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:
