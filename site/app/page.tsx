@@ -1,43 +1,11 @@
-"use client";
+import { getCounts, getProjects, pickFeatured } from "@/lib/content";
+import { HomePage } from "./HomePage";
 
-import { useEffect, useState } from "react";
-import { Footer, NavBar } from "@/components/ui";
-import {
-  AboutSection,
-  DonateBand,
-  DonateModal,
-  Hero,
-  MissionsSection,
-  PhotoMarquee,
-  PresidentTeaser,
-} from "@/components/sections";
-import { FOOTER_COLUMNS, getNavLinks } from "@/lib/site-data";
+// Le projet mis en avant et les compteurs viennent de la base : rendu à la
+// demande pour refléter immédiatement les modifications faites dans l'admin.
+export const dynamic = "force-dynamic";
 
-export default function HomePage() {
-  const [scrolled, setScrolled] = useState(false);
-  const [donateOpen, setDonateOpen] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  const openDonate = () => setDonateOpen(true);
-
-  return (
-    <>
-      <NavBar links={getNavLinks("accueil")} transparent scrolled={scrolled} onCta={openDonate} />
-      <div style={{ marginTop: "calc(var(--nav-h) * -1)" }}>
-        <Hero onDonate={openDonate} />
-      </div>
-      <MissionsSection />
-      <PhotoMarquee />
-      <AboutSection />
-      <PresidentTeaser />
-      <DonateBand onDonate={openDonate} />
-      <Footer columns={FOOTER_COLUMNS} />
-      <DonateModal open={donateOpen} onClose={() => setDonateOpen(false)} />
-    </>
-  );
+export default async function Page() {
+  const [projects, counts] = await Promise.all([getProjects(), getCounts()]);
+  return <HomePage featured={pickFeatured(projects)} counts={counts} />;
 }

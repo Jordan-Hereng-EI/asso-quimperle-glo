@@ -24,12 +24,18 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
+ENV UPLOADS_DIR=/app/uploads
 
 RUN addgroup --system --gid 1001 nodejs \
-  && adduser --system --uid 1001 nextjs
+  && adduser --system --uid 1001 nextjs \
+  # Point de montage du volume des photos : créé ici avec le bon propriétaire,
+  # Docker le reprend pour initialiser le volume nommé.
+  && mkdir -p /app/uploads && chown nextjs:nodejs /app/uploads
 
 COPY --from=build --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=build --chown=nextjs:nodejs /app/.next/static ./.next/static
+# Jouées au démarrage par instrumentation.ts (lib/db.ts → migrate()).
+COPY --from=build --chown=nextjs:nodejs /app/migrations ./migrations
 
 USER nextjs
 EXPOSE 3000

@@ -1,8 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { Button, Footer, NavBar, SectionHeading } from "@/components/ui";
+import { useState } from "react";
+import {
+  Button,
+  FilterChip,
+  Footer,
+  Lightbox,
+  NavBar,
+  SectionHeading,
+  cycleIndex,
+} from "@/components/ui";
 import { DonateModal, Reveal } from "@/components/sections";
 import { ALBUM, FOOTER_COLUMNS, getNavLinks } from "@/lib/site-data";
 import type { AlbumCategory, AlbumPhoto } from "@/types";
@@ -12,29 +20,6 @@ const FILTERS: Array<[AlbumCategory | "all", string]> = [
   ["benin", "Au Bénin"],
   ["bretagne", "En Bretagne"],
 ];
-
-function Chip({ on, children, onClick }: { on: boolean; children: string; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      style={{
-        padding: "10px 20px",
-        cursor: "pointer",
-        fontFamily: "var(--font-body)",
-        fontSize: "0.92rem",
-        fontWeight: 700,
-        borderRadius: "var(--radius-pill)",
-        border: `2px solid ${on ? "var(--benin-green)" : "var(--border-soft)"}`,
-        background: on ? "var(--benin-green)" : "var(--white)",
-        color: on ? "var(--white)" : "var(--text-body)",
-        transition: "all 220ms var(--ease-out)",
-      }}
-    >
-      {children}
-    </button>
-  );
-}
 
 function Photo({ photo, index, onOpen }: { photo: AlbumPhoto; index: number; onOpen: () => void }) {
   const [hover, setHover] = useState(false);
@@ -121,197 +106,19 @@ function Photo({ photo, index, onOpen }: { photo: AlbumPhoto; index: number; onO
   );
 }
 
-function Lightbox({
-  list,
-  index,
-  onClose,
-  onNav,
-}: {
-  list: AlbumPhoto[];
-  index: number | null;
-  onClose: () => void;
-  onNav: (direction: 1 | -1) => void;
-}) {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-      if (e.key === "ArrowRight") onNav(1);
-      if (e.key === "ArrowLeft") onNav(-1);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onNav, onClose]);
-
-  if (index == null) return null;
-  const photo = list[index];
-  const btnStyle = {
-    position: "absolute" as const,
-    top: "50%",
-    transform: "translateY(-50%)",
-    width: "46px",
-    height: "46px",
-    borderRadius: "50%",
-    border: "none",
-    cursor: "pointer",
-    background: "rgba(253,251,246,0.14)",
-    color: "var(--white)",
-    fontSize: "1.3rem",
-    backdropFilter: "blur(6px)",
-    transition: "background 180ms",
-  };
-
-  return (
-    <div
-      onClick={onClose}
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 100,
-        background: "rgba(15,8,6,0.92)",
-        backdropFilter: "blur(6px)",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "clamp(16px, 4vw, 48px)",
-        animation: "fade 240ms ease",
-      }}
-    >
-      {/* Anchored to the overlay rather than the image so it stays put whatever
-          the photo's aspect ratio — and stays thumb-reachable on mobile, where
-          tapping the backdrop is the only other way out. */}
-      <button
-        type="button"
-        aria-label="Fermer la photo"
-        onClick={onClose}
-        style={{
-          position: "absolute",
-          top: "clamp(12px, 2.5vw, 24px)",
-          right: "clamp(12px, 2.5vw, 24px)",
-          zIndex: 1,
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: "48px",
-          height: "48px",
-          padding: 0,
-          borderRadius: "50%",
-          border: "1px solid rgba(253,251,246,0.22)",
-          cursor: "pointer",
-          background: "rgba(253,251,246,0.16)",
-          color: "var(--white)",
-          backdropFilter: "blur(6px)",
-          transition: "background 180ms var(--ease-out), transform 180ms var(--ease-out)",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.background = "rgba(253,251,246,0.3)";
-          e.currentTarget.style.transform = "scale(1.06)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.background = "rgba(253,251,246,0.16)";
-          e.currentTarget.style.transform = "none";
-        }}
-      >
-        <svg
-          width="22"
-          height="22"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.4"
-          strokeLinecap="round"
-          aria-hidden
-        >
-          <path d="M6 6l12 12" />
-          <path d="M18 6L6 18" />
-        </svg>
-      </button>
-
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{ position: "relative", maxWidth: "1000px", width: "100%" }}
-      >
-        <Image
-          key={photo.file}
-          src={`/photos/${photo.file}`}
-          alt={photo.title}
-          width={photo.width}
-          height={photo.height}
-          style={{
-            width: "100%",
-            height: "auto",
-            maxHeight: "72vh",
-            objectFit: "contain",
-            borderRadius: "var(--radius-lg)",
-            animation: "fade 320ms ease",
-          }}
-        />
-        <button
-          aria-label="Photo précédente"
-          onClick={() => onNav(-1)}
-          style={{ ...btnStyle, left: "-8px" }}
-        >
-          ‹
-        </button>
-        <button
-          aria-label="Photo suivante"
-          onClick={() => onNav(1)}
-          style={{ ...btnStyle, right: "-8px" }}
-        >
-          ›
-        </button>
-        <div
-          style={{
-            textAlign: "center",
-            marginTop: "18px",
-            maxWidth: "64ch",
-            marginLeft: "auto",
-            marginRight: "auto",
-          }}
-        >
-          <div
-            style={{
-              fontFamily: "var(--font-display)",
-              fontWeight: 800,
-              fontSize: "1.25rem",
-              color: "var(--white)",
-            }}
-          >
-            {photo.title}
-          </div>
-          <p
-            style={{
-              margin: "8px 0 0",
-              fontSize: "0.95rem",
-              lineHeight: 1.6,
-              color: "var(--sand-200)",
-            }}
-          >
-            {photo.description}
-          </p>
-          <div
-            style={{
-              marginTop: "10px",
-              fontSize: "0.8rem",
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-              color: "var(--sand-400)",
-            }}
-          >
-            {index + 1} / {list.length}
-          </div>
-        </div>
-      </div>
-      <style>{`@keyframes fade{from{opacity:0}to{opacity:1}}`}</style>
-    </div>
-  );
-}
-
 export function AlbumPage() {
   const [donateOpen, setDonateOpen] = useState(false);
   const [filter, setFilter] = useState<AlbumCategory | "all">("all");
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const list = ALBUM.filter((p) => filter === "all" || p.category === filter);
+  const lightboxList = list.map((p) => ({
+    src: `/photos/${p.file}`,
+    alt: p.title,
+    title: p.title,
+    description: p.description,
+    width: p.width,
+    height: p.height,
+  }));
 
   return (
     <div>
@@ -345,9 +152,9 @@ export function AlbumPage() {
               }}
             >
               {FILTERS.map(([key, label]) => (
-                <Chip key={key} on={filter === key} onClick={() => setFilter(key)}>
+                <FilterChip key={key} on={filter === key} onClick={() => setFilter(key)}>
                   {label}
-                </Chip>
+                </FilterChip>
               ))}
             </div>
           </Reveal>
@@ -423,12 +230,12 @@ export function AlbumPage() {
               </Button>
               <Button
                 as="a"
-                href="/#missions"
+                href="/projets"
                 variant="ghost"
                 size="lg"
                 style={{ color: "var(--white)" }}
               >
-                Découvrir nos missions
+                Découvrir nos projets
               </Button>
             </div>
           </Reveal>
@@ -437,13 +244,11 @@ export function AlbumPage() {
 
       <Footer columns={FOOTER_COLUMNS} />
       <Lightbox
-        list={list}
+        list={lightboxList}
         index={openIndex}
         onClose={() => setOpenIndex(null)}
         onNav={(direction) =>
-          setOpenIndex((current) =>
-            current === null ? null : (current + direction + list.length) % list.length,
-          )
+          setOpenIndex((current) => cycleIndex(current, direction, list.length))
         }
       />
       <DonateModal open={donateOpen} onClose={() => setDonateOpen(false)} />

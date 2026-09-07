@@ -1,13 +1,15 @@
-import type { AlbumPhoto, BureauMember, FooterColumn, Mission, NavLink } from "@/types";
+import type { AlbumPhoto, BureauMember, FooterColumn, NavLink, ProjectStatus } from "@/types";
 
 /**
  * Builds the primary nav links, marking the current page as active.
- * `active` matches the handoff's per-page NAV_LINKS(active) helper.
+ * L'accueil n'y figure pas : le logo y renvoie, et cela laisse la place aux
+ * six entrées sur un écran de portable.
  */
 export function getNavLinks(active?: string): NavLink[] {
   return [
-    { label: "Accueil", href: "/", active: active === "accueil" },
-    { label: "Nos missions", href: "/#missions" },
+    { label: "Projets", href: "/projets", active: active === "projets" },
+    { label: "Actions", href: "/actions", active: active === "actions" },
+    { label: "Parrainages", href: "/parrainages", active: active === "parrainages" },
     { label: "Album", href: "/album", active: active === "album" },
     { label: "L'équipe", href: "/equipe", active: active === "equipe" },
     { label: "Contact", href: "/contact", active: active === "contact" },
@@ -19,60 +21,41 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
     title: "Association",
     items: [
       { label: "Le mot de la présidente", href: "/mot-de-la-presidente" },
-      { label: "L'équipe & espace membre", href: "/equipe" },
+      { label: "Nos projets", href: "/projets" },
+      { label: "Nos actions", href: "/actions" },
       { label: "Album photo", href: "/album" },
-      { label: "Nos missions", href: "/#missions" },
+      { label: "L'équipe", href: "/equipe" },
     ],
   },
   {
     title: "Agir",
     items: [
       { label: "Faire un don", href: "#don" },
+      { label: "Parrainer un enfant", href: "/parrainages" },
       { label: "Devenir bénévole", href: "/contact" },
-      { label: "Parrainer un enfant", href: "/contact" },
       { label: "Nous contacter", href: "/contact" },
     ],
   },
 ];
 
-export const MISSIONS: Mission[] = [
-  {
-    image: "/assets/enfants.jpg",
-    imageAlt: "Enfants béninois souriant",
-    tag: "Éducation",
-    tagTone: "green",
-    accent: "var(--benin-green)",
-    title: "Scolariser chaque enfant",
-    description:
-      "Fournitures, uniformes et parrainage scolaire pour que les enfants de la région rejoignent les bancs de l'école et y restent.",
-    articleSource: "Ouest-France",
-    href: "#",
-  },
-  {
-    image: "/assets/article1.avif",
-    imageAlt: "Bénévoles en mission sur le terrain au Bénin",
-    tag: "Terrain",
-    tagTone: "yellow",
-    accent: "var(--benin-yellow-deep)",
-    title: "Des missions sur place",
-    description:
-      "Deux fois par an, nos bénévoles se rendent au Bénin pour rencontrer les familles, évaluer les besoins et suivre les projets.",
-    articleSource: "Le Télégramme",
-    href: "#",
-  },
-  {
-    image: "/assets/article2.avif",
-    imageAlt: "Marché solidaire à Quimperlé",
-    tag: "Solidarité",
-    tagTone: "red",
-    accent: "var(--benin-red)",
-    title: "Mobiliser à Quimperlé",
-    description:
-      "Marchés solidaires, ventes d'artisanat béninois et événements en Bretagne financent nos actions tout au long de l'année.",
-    articleSource: "Le Poher",
-    href: "#",
-  },
-];
+export const PROJECT_STATUS_LABELS: Record<ProjectStatus, string> = {
+  en_cours: "En cours",
+  realise: "Réalisé",
+  a_venir: "À venir",
+};
+
+/* ---- Dons ---------------------------------------------------------------- */
+
+/** À remplacer par l'adresse de la page de collecte HelloAsso de l'association. */
+export const HELLOASSO_URL = "#";
+
+/** DONNÉES FACTICES — à remplacer par le vrai RIB de l'association. */
+export const RIB = {
+  holder: "Association Quimperlé-Glo",
+  iban: "FR76 0000 0000 0000 0000 0000 000",
+  bic: "XXXXFRPPXXX",
+  bank: "Banque (à compléter)",
+};
 
 /**
  * The handoff's album references 19 originals from a high-res `uploads/`
@@ -94,7 +77,7 @@ export const ALBUM: AlbumPhoto[] = [
   },
   {
     file: "gouter.jpg",
-    title: "Transports des enfants parrainés",
+    title: "Transports des enfants parrainés",
     description: "Description à écrire.",
     category: "benin",
     width: 1600,

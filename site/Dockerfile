@@ -21,9 +21,12 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
+ENV UPLOADS_DIR=/app/uploads
 
 RUN addgroup --system --gid 1001 nodejs \
-  && adduser --system --uid 1001 nextjs
+  && adduser --system --uid 1001 nextjs \
+  # Point de montage du volume des photos (lecture seule côté site).
+  && mkdir -p /app/uploads && chown nextjs:nodejs /app/uploads
 
 # Le bundle standalone contient server.js et un node_modules élagué ;
 # .next/static et public/ ne sont pas inclus dedans et doivent être copiés.

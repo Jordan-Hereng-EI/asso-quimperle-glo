@@ -28,7 +28,7 @@ const HeartIcon = ({ size = 17 }: { size?: number }) => (
  * primary donate CTA. `transparent` overlays a hero; it turns solid on
  * scroll when `scrolled` is passed by the host page.
  *
- * Below 900px the links and CTA collapse into a burger menu; which elements
+ * Below 1000px the links and CTA collapse into a burger menu; which elements
  * show at which width is driven by the `.qg-nav-*` classes in globals.css,
  * so those properties are deliberately kept out of the inline styles.
  */
@@ -53,14 +53,14 @@ export function NavBar({
     setMenuOpen(false);
   }
 
-  // The panel is only reachable under 900px: also close it on Escape and
+  // The panel is only reachable under 1000px: also close it on Escape and
   // whenever the viewport grows past the breakpoint.
   useEffect(() => {
     if (!menuOpen) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setMenuOpen(false);
     };
-    const mq = window.matchMedia("(min-width: 901px)");
+    const mq = window.matchMedia("(min-width: 1001px)");
     const onChange = () => {
       if (mq.matches) setMenuOpen(false);
     };

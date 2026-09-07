@@ -5,6 +5,9 @@
 #
 # Identifiants admin par défaut : admin@example.com / admin
 # (hash scrypt du mot de passe "admin", généré par admin/scripts/hash-password.mjs)
+#
+# La base est aussi publiée sur 127.0.0.1:5432 pour pouvoir lancer le site ou
+# l'admin en `npm run dev` contre elle (DATABASE_URL dans les .env.local).
 
 services:
   site:
@@ -12,6 +15,14 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-quimperle}:${POSTGRES_PASSWORD:-devpassword}@db:5432/${POSTGRES_DB:-quimperle_glo}
+      UPLOADS_DIR: /app/uploads
+    volumes:
+      - uploads:/app/uploads:ro
+    depends_on:
+      db:
+        condition: service_healthy
 
   admin:
     build: ./admin
@@ -23,6 +34,9 @@ services:
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
       ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH:-6162636465666768696a6b6c6d6e6f70:fae9be9d6c5553ba2a686795ef0f48f7e867b31105fd29bb3ee82b3a573cf7b18f95e5fe94aed18d968dccac083f80cdcb6f01187803e04659dde5a058def491}
       DATABASE_URL: postgresql://${POSTGRES_USER:-quimperle}:${POSTGRES_PASSWORD:-devpassword}@db:5432/${POSTGRES_DB:-quimperle_glo}
+      UPLOADS_DIR: /app/uploads
+    volumes:
+      - uploads:/app/uploads
     depends_on:
       db:
         condition: service_healthy
@@ -34,6 +48,8 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-quimperle}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devpassword}
       POSTGRES_DB: ${POSTGRES_DB:-quimperle_glo}
+    ports:
+      - "127.0.0.1:5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -44,3 +60,5 @@ services:
 
 volumes:
   pgdata:
+  # Photos uploadées depuis l'admin, lues par le site.
+  uploads:
