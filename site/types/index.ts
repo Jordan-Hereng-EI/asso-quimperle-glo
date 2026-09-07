@@ -16,18 +16,6 @@ export interface FooterColumn {
   items: FooterColumnItem[];
 }
 
-export interface Mission {
-  image: string;
-  imageAlt: string;
-  tag: string;
-  tagTone: BrandTone;
-  accent: string;
-  title: string;
-  description: string;
-  articleSource: string;
-  href: string;
-}
-
 export type AlbumCategory = "benin" | "bretagne";
 
 export interface AlbumPhoto {
@@ -44,4 +32,52 @@ export interface BureauMember {
   name: string;
   role: string;
   tone: Extract<BrandTone, "green" | "yellow" | "red">;
+}
+
+/* ---- Contenu géré depuis l'admin (base de données) ---------------------- */
+
+/** Photo de la photothèque, servie par /uploads/<filename>. */
+export interface PhotoRef {
+  filename: string;
+  alt: string;
+  width: number;
+  height: number;
+}
+
+export type ProjectStatus = "a_venir" | "en_cours" | "realise";
+
+export interface ProjectItem {
+  id: number;
+  label: string;
+  photo: PhotoRef | null;
+}
+
+export interface Project {
+  id: number;
+  slug: string;
+  title: string;
+  location: string;
+  status: ProjectStatus;
+  summary: string;
+  cover: PhotoRef | null;
+  articleUrl: string | null;
+  articleSource: string | null;
+  items: ProjectItem[];
+}
+
+export type ActionZone = "benin" | "bretagne";
+
+export interface ActionEntry {
+  id: number;
+  zone: ActionZone;
+  title: string;
+  description: string;
+  photo: PhotoRef | null;
+  articleUrl: string | null;
+  articleSource: string | null;
+}
+
+export interface Sponsorship {
+  initials: string[];
+  photos: Array<PhotoRef & { caption: string }>;
 }

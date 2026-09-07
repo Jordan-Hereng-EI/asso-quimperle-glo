@@ -89,7 +89,7 @@ jobs:
             # il suffit pour tirer l'image depuis GHCR.
             echo "${GHCR_TOKEN}" | docker login ghcr.io -u "${GHCR_USER}" --password-stdin
             docker compose pull site
-            docker compose up -d site
+            docker compose up -d site db
             docker image prune -f
         env:
           GHCR_USER: ${{ github.actor }}

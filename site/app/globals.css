@@ -83,13 +83,12 @@ a:hover {
   }
 }
 
-/* Anchor targets must clear the sticky NavBar when jumped to. */
-[id="missions"],
-[id="about"] {
+/* Anchor targets (sections, projets #<slug>…) must clear the sticky NavBar. */
+[id] {
   scroll-margin-top: calc(var(--nav-h) + 8px);
 }
 
-/* --- NavBar: desktop row → burger menu below 900px --- */
+/* --- NavBar: desktop row → burger menu below 1000px (six entrées + CTA) --- */
 .qg-nav-links {
   display: flex;
   gap: 28px;
@@ -111,7 +110,7 @@ a:hover {
   display: none;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .qg-nav-links,
   .qg-nav-cta {
     display: none;

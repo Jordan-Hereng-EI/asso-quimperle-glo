@@ -11,6 +11,14 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-quimperle}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD manquante}@db:5432/${POSTGRES_DB:-quimperle_glo}
+      UPLOADS_DIR: /app/uploads
+    volumes:
+      - uploads:/app/uploads:ro
+    depends_on:
+      db:
+        condition: service_healthy
 
   admin:
     image: ghcr.io/jordan-hereng-ei/asso-quimperle-glo-admin:latest
@@ -22,6 +30,9 @@ services:
       ADMIN_EMAIL: ${ADMIN_EMAIL:?ADMIN_EMAIL manquante}
       ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH:?ADMIN_PASSWORD_HASH manquante}
       DATABASE_URL: postgresql://${POSTGRES_USER:-quimperle}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD manquante}@db:5432/${POSTGRES_DB:-quimperle_glo}
+      UPLOADS_DIR: /app/uploads
+    volumes:
+      - uploads:/app/uploads
     depends_on:
       db:
         condition: service_healthy
@@ -43,3 +54,7 @@ services:
 
 volumes:
   pgdata:
+  # Photos uploadées depuis l'admin (écriture) et servies par le site (lecture).
+  # Persistant entre les déploiements ; à inclure dans les sauvegardes du VPS
+  # avec pgdata.
+  uploads:

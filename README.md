@@ -1,14 +1,38 @@
 # Association Quimperlé-Glo — monorepo
 
-Deux applications Next.js et leur infrastructure de déploiement :
+Deux applications Next.js, une base PostgreSQL et leur infrastructure de déploiement :
 
-| Dossier                | Rôle                                                          | Port (prod) |
-| ---------------------- | ------------------------------------------------------------- | ----------- |
-| [`site/`](site)        | Site vitrine public de l'association (voir son README dédié). | 3000        |
-| [`admin/`](admin)      | Espace d'administration (connexion seule pour l'instant).     | 3001        |
-| —                      | PostgreSQL 17 (aucune table pour l'instant).                  | interne     |
+| Dossier           | Rôle                                                                                            | Port (prod) |
+| ----------------- | ----------------------------------------------------------------------------------------------- | ----------- |
+| [`site/`](site)   | Site vitrine public. Lit en base les projets, actions et parrainages ; sert les photos uploadées. | 3000        |
+| [`admin/`](admin) | Espace d'administration : photothèque, projets, actions, page Parrainages.                       | 3001        |
+| —                 | PostgreSQL 17. Schéma et contenu initial créés automatiquement par l'admin (migrations).         | interne     |
+
+Les photos déposées depuis l'admin vivent sur un **volume Docker partagé**
+(`uploads`) : l'admin y écrit (converties en WebP, 1600 px max), le site le
+monte en lecture seule et les sert sous `/uploads/…`.
+
+## Ce que la cliente peut modifier depuis l'admin
+
+- **Photos** : déposer (plusieurs à la fois, conversion et redimensionnement
+  automatiques), décrire, supprimer.
+- **Projets** : titre, lieu, état (à venir / en cours / réalisé), présentation,
+  photo principale, article de presse, et la liste numérotée des réalisations
+  avec une photo chacune. Le premier projet « en cours » est mis en avant sur
+  l'accueil.
+- **Actions** : au Bénin et en Bretagne — titre, description, photo, article.
+- **Parrainages** : la liste des initiales des parrains et marraines et la
+  galerie de photos de la page.
+
+Tant qu'aucune photo n'est associée, le site affiche un cadre « Photo à venir ».
 
 ## Développement local
+
+Une base locale en une commande (publiée sur `127.0.0.1:5432`) :
+
+```bash
+docker compose up -d db
+```
 
 ```bash
 # Site public — http://localhost:3000
@@ -20,13 +44,24 @@ cd site && npm install && npm run dev
 cd admin && npm install && npm run dev
 ```
 
-L'admin exige trois variables d'environnement (dans `admin/.env.local` en dev) :
+Variables attendues en dev (fichiers `.env.local`, non commités) :
 
 ```bash
+# site/.env.local
+DATABASE_URL=postgresql://quimperle:devpassword@localhost:5432/quimperle_glo
+UPLOADS_DIR=../admin/uploads      # lit les photos déposées par l'admin en dev
+
+# admin/.env.local
+DATABASE_URL=postgresql://quimperle:devpassword@localhost:5432/quimperle_glo
+UPLOADS_DIR=./uploads
 ADMIN_EMAIL=vous@exemple.fr
 ADMIN_PASSWORD_HASH=…   # cd admin && npm run hash-password -- "VotreMotDePasse"
 SESSION_SECRET=…        # node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
+
+Au premier démarrage, l'admin crée les tables et y charge le contenu rédigé
+par la cliente (`admin/migrations/`). Le site fonctionne sans base : les pages
+concernées affichent alors leurs états vides.
 
 ## Test avec Docker
 
@@ -52,23 +87,23 @@ chemin). Chacune :
    redémarre le service concerné.
 
 Rien à faire sur le VPS au fil de l'eau : le déploiement est entièrement
-automatique. Les deux workflows peuvent aussi être lancés à la main
-(`workflow_dispatch`).
+automatique, migrations comprises (jouées par l'admin à son démarrage). Les
+deux workflows peuvent aussi être lancés à la main (`workflow_dispatch`).
 
 ### Secrets GitHub à renseigner (une seule fois)
 
 Dans *Settings → Secrets and variables → Actions* du dépôt :
 
-| Secret                | Contenu                                                                  |
-| --------------------- | ------------------------------------------------------------------------ |
-| `VPS_HOST`            | IP ou nom d'hôte du VPS                                                  |
-| `VPS_USER`            | Utilisateur SSH de déploiement                                           |
-| `VPS_SSH_KEY`         | Clé privée SSH (OpenSSH, la clé publique étant dans `authorized_keys`)   |
-| `VPS_PORT`            | Port SSH — optionnel, 22 par défaut                                      |
-| `POSTGRES_PASSWORD`   | Mot de passe PostgreSQL (alphanumérique conseillé)                       |
-| `ADMIN_EMAIL`         | E-mail du compte administrateur                                          |
-| `ADMIN_PASSWORD_HASH` | Sortie de `cd admin && npm run hash-password -- "VotreMotDePasse"`       |
-| `SESSION_SECRET`      | 64 caractères hexadécimaux aléatoires (commande dans `.env.example`)     |
+| Secret                | Contenu                                                                |
+| --------------------- | ---------------------------------------------------------------------- |
+| `VPS_HOST`            | IP ou nom d'hôte du VPS                                                |
+| `VPS_USER`            | Utilisateur SSH de déploiement                                         |
+| `VPS_SSH_KEY`         | Clé privée SSH (OpenSSH, la clé publique étant dans `authorized_keys`) |
+| `VPS_PORT`            | Port SSH — optionnel, 22 par défaut                                    |
+| `POSTGRES_PASSWORD`   | Mot de passe PostgreSQL (alphanumérique conseillé)                     |
+| `ADMIN_EMAIL`         | E-mail du compte administrateur                                        |
+| `ADMIN_PASSWORD_HASH` | Sortie de `cd admin && npm run hash-password -- "VotreMotDePasse"`     |
+| `SESSION_SECRET`      | 64 caractères hexadécimaux aléatoires (commande dans `.env.example`)   |
 
 `.env.example` documente les variables applicatives ; le fichier `.env` du VPS
 est réécrit à chaque déploiement depuis ces secrets — inutile de le gérer à la
@@ -92,9 +127,25 @@ sudo usermod -aG docker "$USER"
 Ensuite, le premier push sur `master` (ou un lancement manuel des deux
 workflows) déploie tout : site, admin et base de données.
 
+### Sauvegardes
+
+Deux volumes Docker portent toutes les données : `pgdata` (base) et `uploads`
+(photos). Ils survivent aux redéploiements ; ce sont eux qu'il faut inclure
+dans les sauvegardes du VPS.
+
 Les ports 3000 (site) et 3001 (admin) sont exposés en direct. Pour servir des
 domaines en HTTPS, placez un reverse proxy (Caddy, Nginx…) devant — hors
 périmètre de ce dépôt pour l'instant.
+
+## À compléter avant la mise en ligne
+
+- **Dons** : l'adresse HelloAsso (`HELLOASSO_URL`) et le RIB (`RIB`) sont des
+  valeurs factices dans [`site/lib/site-data.ts`](site/lib/site-data.ts) — le
+  bouton HelloAsso reste désactivé tant que l'URL n'est pas renseignée.
+- **Photos** : le contenu initial est chargé sans photos ; elles sont à
+  déposer et associer depuis l'admin.
+- **E-mail de contact** et formulaire de contact : voir
+  [`site/README.md`](site/README.md).
 
 ## Origine
 

@@ -21,3 +21,6 @@ npm-debug.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# photos uploadées en développement (en prod : volume Docker)
+/uploads/

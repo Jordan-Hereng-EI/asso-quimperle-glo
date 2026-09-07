@@ -189,12 +189,12 @@ export function Hero({ onDonate }: HeroProps) {
             </Button>
             <Button
               as="a"
-              href="/#missions"
+              href="/projets"
               variant="outline"
               size="lg"
               style={{ color: "var(--white)", borderColor: "rgba(255,255,255,0.6)" }}
             >
-              Découvrir nos missions
+              Découvrir nos projets
             </Button>
           </div>
         </div>
